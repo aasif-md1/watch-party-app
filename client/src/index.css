@@ -1,46 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap');
 @import "tailwindcss";
+
+:root {
+  --bg-canvas: #070709;
+  --bg-surface: #0E0E12;
+  --bg-card: #15151A;
+  --bg-card-hover: #1E1E24;
+  --accent-red: #E50914;
+  --accent-red-hover: #F6121D;
+  --accent-red-pressed: #B80710;
+  --text-white: #FFFFFF;
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --text-dim: rgba(255, 255, 255, 0.45);
+  --color-error: #E50914;
+  --color-success: #4ADE80;
+}
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.font-display {
+  font-family: "Bebas Neue", -apple-system, sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.font-heading {
+  font-family: "Plus Jakarta Sans", "Inter", -apple-system, sans-serif;
+}
+
+.font-script {
+  font-family: "Caveat", cursive;
 }
 
 body {
   transition: background-color 0.3s;
-  background-color: #0a0a14;
-  color: #e2e8f0;
+  background-color: #000000;
+  color: #FFFFFF;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* Blue-tinged selection */
+/* Netflix Red selection */
 ::selection {
-  background: rgba(59, 130, 246, 0.35);
-  color: #fff;
+  background: rgba(229, 9, 20, 0.45);
+  color: #FFFFFF;
 }
 
-/* Scrollbar styling — thin blue */
+/* Netflix Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #000000;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(37, 99, 235, 0.3);
-  border-radius: 10px;
+  background: #333333;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.5);
+  background: #E50914;
 }
 
 /* Firefox */
 html {
   scrollbar-width: thin;
-  scrollbar-color: rgba(37, 99, 235, 0.3) transparent;
+  scrollbar-color: #333333 #000000;
+}
+
+/* Hide scrollbar for clean Netflix horizontal rows while keeping swipe active */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Faint film grain texture overlay across page */
+.film-grain-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 /* Room Join Card Styling */

@@ -445,10 +445,25 @@ const VideoChat = ({ socket, roomId, username }) => {
       )}
       {isMainLocal && activeSticker && (
         <motion.div
+          key={activeSticker}
+          initial={{ scale: 0.4, opacity: 0, y: 10 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 450, damping: 20 }}
           drag dragMomentum={false}
           style={{
             position: "absolute", top: `${stickerPos.y}%`, right: `${100 - stickerPos.x}%`,
-            fontSize: "2.5rem", cursor: "grab", textShadow: "0 2px 12px rgba(0,0,0,0.6)", userSelect: "none"
+            fontSize: "2.2rem", cursor: "grab", userSelect: "none",
+            background: "rgba(11, 11, 15, 0.65)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            border: "1px solid rgba(217, 165, 92, 0.4)",
+            borderRadius: "16px",
+            padding: "4px 10px",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.6), 0 0 20px rgba(217, 165, 92, 0.2)",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            lineHeight: 1
           }}
           onDragEnd={(_, info) => {
             setStickerPos(prev => ({ x: Math.max(0, Math.min(90, prev.x + (info.offset.x / 2))), y: Math.max(0, Math.min(80, prev.y + (info.offset.y / 2))) }));
@@ -460,14 +475,29 @@ const VideoChat = ({ socket, roomId, username }) => {
 
       {/* Main stream labels & stickers (if main is remote) */}
       {!isMainLocal && peers[0]?.sticker && (
-        <div
+        <motion.div
+          key={peers[0].sticker}
+          initial={{ scale: 0.4, opacity: 0, y: 10 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 450, damping: 20 }}
           style={{
             position: "absolute", top: `${peers[0].stickerPos?.y || 10}%`, right: `${100 - (peers[0].stickerPos?.x || 70)}%`,
-            fontSize: "2.5rem", textShadow: "0 2px 12px rgba(0,0,0,0.6)", userSelect: "none"
+            fontSize: "2.2rem", userSelect: "none",
+            background: "rgba(11, 11, 15, 0.65)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            border: "1px solid rgba(217, 165, 92, 0.4)",
+            borderRadius: "16px",
+            padding: "4px 10px",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.6), 0 0 20px rgba(217, 165, 92, 0.2)",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            lineHeight: 1
           }}
         >
           {peers[0].sticker}
-        </div>
+        </motion.div>
       )}
 
       {/* Label for main video */}
@@ -568,14 +598,14 @@ const VideoChat = ({ socket, roomId, username }) => {
             {activePanel === "stickers" && (
               <div>
                 <div style={{ display: "flex", gap: "4px", marginBottom: "8px" }}>
-                  <button onClick={() => setActiveSticker(null)} style={{ background: activeSticker === null ? "rgba(255,255,255,0.1)" : "transparent", color: activeSticker === null ? "#fff" : "rgba(255,255,255,0.4)", border: "none", padding: "4px 8px", borderRadius: "6px", cursor: "pointer", fontSize: "0.7rem", fontWeight: "600" }}>None</button>
+                  <button onClick={() => setActiveSticker(null)} style={{ background: activeSticker === null ? "rgba(217, 165, 92, 0.2)" : "transparent", color: activeSticker === null ? "#EFC382" : "rgba(243, 239, 230, 0.5)", border: activeSticker === null ? "1px solid rgba(217, 165, 92, 0.3)" : "1px solid transparent", padding: "4px 8px", borderRadius: "6px", cursor: "pointer", fontSize: "0.7rem", fontWeight: "600" }}>None</button>
                   {STICKER_PACKS.map((pack, idx) => (
-                    <button key={pack.label} onClick={() => setStickerPack(idx)} style={{ background: stickerPack === idx && activeSticker ? "rgba(255,255,255,0.1)" : "transparent", color: stickerPack === idx && activeSticker ? "#fff" : "rgba(255,255,255,0.4)", border: "none", padding: "4px 8px", borderRadius: "6px", cursor: "pointer", fontSize: "0.7rem", fontWeight: "600" }}>{pack.label}</button>
+                    <button key={pack.label} onClick={() => setStickerPack(idx)} style={{ background: stickerPack === idx && activeSticker ? "rgba(217, 165, 92, 0.2)" : "transparent", color: stickerPack === idx && activeSticker ? "#EFC382" : "rgba(243, 239, 230, 0.5)", border: stickerPack === idx && activeSticker ? "1px solid rgba(217, 165, 92, 0.3)" : "1px solid transparent", padding: "4px 8px", borderRadius: "6px", cursor: "pointer", fontSize: "0.7rem", fontWeight: "600" }}>{pack.label}</button>
                   ))}
                 </div>
                 <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                   {STICKER_PACKS[stickerPack].stickers.map((s) => (
-                    <button key={s} onClick={() => setActiveSticker(s)} style={{ background: activeSticker === s ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.04)", border: activeSticker === s ? "1px solid rgba(255,255,255,0.3)" : "1px solid transparent", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <button key={s} onClick={() => setActiveSticker(s)} style={{ background: activeSticker === s ? "rgba(217, 165, 92, 0.25)" : "rgba(255,255,255,0.04)", border: activeSticker === s ? "1px solid #D9A55C" : "1px solid transparent", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s ease" }}>
                       {s}
                     </button>
                   ))}

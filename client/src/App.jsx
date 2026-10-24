@@ -2,6 +2,10 @@ import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Home from "./pages/Home";
+import About from "./pages/About";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Contact from "./pages/Contact";
 import StreamRoom from "./pages/StreamRoom";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -13,6 +17,10 @@ function App() {
     <HelmetProvider>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/contact" element={<Contact />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/stream/:roomId" element={<StreamRoom />} />
           <Route
