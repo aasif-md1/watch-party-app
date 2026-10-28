@@ -5,6 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 import { Navbar } from "./home/Navbar";
 import { Hero } from "./home/Hero";
 import { FeatureGrid } from "./home/FeatureGrid";
+import { RoomShowcase } from "./home/RoomShowcase";
 import { HowItWorks } from "./home/HowItWorks";
 import { FaqSection } from "./home/FaqSection";
 import { CtaBanner } from "./home/CtaBanner";
@@ -80,6 +81,14 @@ const Home = () => {
 
       {/* 3. Feature Grid (4 clean equal cards in 1 row) */}
       <FeatureGrid isHinglish={isHinglish} isMobile={isMobile} />
+
+      {/* 3.5 Cinematic Room Showcase (Inside The Theater - Live Leo Movie & Chat Preview) */}
+      <RoomShowcase
+        openCreateModal={openCreateModal}
+        openJoinModal={openJoinModal}
+        isHinglish={isHinglish}
+        isMobile={isMobile}
+      />
 
       {/* 4. How It Works Section ("Get Started in Seconds" with 4 steps) */}
       <HowItWorks
