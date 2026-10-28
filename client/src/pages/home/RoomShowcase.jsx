@@ -14,8 +14,9 @@ export const RoomShowcase = ({
       id="room-showcase"
       style={{
         position: "relative",
-        padding: isMobile ? "28px 14px 40px" : "48px 24px 64px",
-        maxWidth: "1400px",
+        padding: isMobile ? "32px 14px 44px" : "64px 24px 68px",
+        scrollMarginTop: "80px",
+        maxWidth: "1360px",
         boxSizing: "border-box",
         margin: "0 auto",
         width: "100%",
@@ -23,21 +24,21 @@ export const RoomShowcase = ({
       }}
     >
       {/* ========================================================= */}
-      {/* 1. SECTION HEADING: Clean, uncluttered, cinematic         */}
+      {/* 1. SECTION HEADING                                        */}
       {/* ========================================================= */}
       <div
         style={{
           position: "relative",
           zIndex: 2,
           textAlign: "center",
-          maxWidth: "760px",
-          margin: "0 auto 28px"
+          maxWidth: "720px",
+          margin: "0 auto 24px"
         }}
       >
         <h2
           className="font-heading"
           style={{
-            fontSize: isMobile ? "1.8rem" : "2.45rem",
+            fontSize: isMobile ? "1.75rem" : "2.35rem",
             fontWeight: "900",
             color: "#FFFFFF",
             margin: "0 0 8px 0",
@@ -52,11 +53,11 @@ export const RoomShowcase = ({
 
         <p
           style={{
-            fontSize: isMobile ? "0.86rem" : "0.96rem",
+            fontSize: isMobile ? "0.85rem" : "0.94rem",
             lineHeight: 1.55,
             color: "rgba(255, 255, 255, 0.65)",
             margin: 0,
-            maxWidth: "600px",
+            maxWidth: "580px",
             marginLeft: "auto",
             marginRight: "auto"
           }}
@@ -68,33 +69,34 @@ export const RoomShowcase = ({
       </div>
 
       {/* ========================================================= */}
-      {/* 2. FLOATING CINEMA OLED SCREEN (Wall-Mounted with Ambilight) */}
+      {/* 2. REALISTIC MACBOOK PRO CINEMA RIG MOCKUP               */}
       {/* ========================================================= */}
       <div
         style={{
           position: "relative",
           zIndex: 2,
-          maxWidth: "980px",
-          margin: "0 auto"
+          maxWidth: isMobile ? "100%" : "890px",
+          margin: "0 auto",
+          padding: isMobile ? "0 4px" : "0 12px"
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* ========================================================= */}
         {/* SOFT RED AMBIENT BACKLIGHT GLOW (Ambilight Aura)          */}
-        {/* Radiates outside the frame onto the dark theater wall     */}
-        {/* Warm, diffuse, gentle on eyes, no harsh glare             */}
+        {/* Radiates outside the laptop frame onto dark background    */}
+        {/* Soft, warm, eye-friendly, no harsh glare                  */}
         {/* ========================================================= */}
         <div
           aria-hidden="true"
           style={{
             position: "absolute",
-            inset: isMobile ? "-14px -12px" : "-36px -44px",
-            borderRadius: isMobile ? "24px" : "36px",
+            inset: isMobile ? "-14px -10px -10px -10px" : "-36px -48px -20px -48px",
+            borderRadius: isMobile ? "20px" : "32px",
             background: isHovered
-              ? "radial-gradient(ellipse at 50% 50%, rgba(255, 24, 48, 0.38) 0%, rgba(220, 16, 38, 0.22) 44%, rgba(180, 10, 28, 0.08) 72%, transparent 100%)"
-              : "radial-gradient(ellipse at 50% 50%, rgba(255, 24, 48, 0.28) 0%, rgba(220, 16, 38, 0.16) 44%, rgba(180, 10, 28, 0.05) 72%, transparent 100%)",
-            filter: isMobile ? "blur(30px)" : "blur(48px)",
+              ? "radial-gradient(ellipse at 50% 46%, rgba(255, 24, 48, 0.40) 0%, rgba(220, 16, 38, 0.24) 44%, rgba(180, 10, 28, 0.08) 72%, transparent 100%)"
+              : "radial-gradient(ellipse at 50% 46%, rgba(255, 24, 48, 0.30) 0%, rgba(220, 16, 38, 0.18) 44%, rgba(180, 10, 28, 0.05) 72%, transparent 100%)",
+            filter: isMobile ? "blur(26px)" : "blur(48px)",
             opacity: 0.95,
             transition: "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
             pointerEvents: "none",
@@ -102,47 +104,67 @@ export const RoomShowcase = ({
           }}
         />
 
-        {/* The Precision Cinema OLED Bezel */}
+        {/* ========================================================= */}
+        {/* MACBOOK DISPLAY LID                                       */}
+        {/* ========================================================= */}
         <div
           style={{
             position: "relative",
             zIndex: 2,
-            background: "linear-gradient(180deg, #14161C 0%, #0C0E12 100%)",
-            borderRadius: isMobile ? "12px" : "16px",
-            padding: isMobile ? "6px" : "10px",
-            border: "1px solid rgba(255, 255, 255, 0.14)",
+            background: "linear-gradient(180deg, #181922 0%, #101117 100%)",
+            borderRadius: isMobile ? "11px 11px 2px 2px" : "16px 16px 3px 3px",
+            padding: isMobile ? "5px 5px 0 5px" : "9px 9px 0 9px",
+            border: "1px solid rgba(255, 255, 255, 0.16)",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.95)",
             /* Multi-layer soft ambient box-shadow */
             boxShadow: isHovered
-              ? "0 30px 85px -15px rgba(0, 0, 0, 0.96), 0 0 50px 8px rgba(255, 20, 48, 0.24), 0 0 100px 22px rgba(220, 14, 38, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
-              : "0 20px 65px -15px rgba(0, 0, 0, 0.92), 0 0 38px 6px rgba(255, 20, 48, 0.18), 0 0 80px 18px rgba(220, 14, 38, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.14)",
+              ? "0 25px 70px -10px rgba(0, 0, 0, 0.95), 0 0 45px 6px rgba(255, 20, 48, 0.22), 0 0 95px 20px rgba(220, 14, 38, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.22)"
+              : "0 18px 55px -10px rgba(0, 0, 0, 0.90), 0 0 35px 5px rgba(255, 20, 48, 0.16), 0 0 75px 15px rgba(220, 14, 38, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.16)",
             transform: isHovered ? "translateY(-3px)" : "translateY(0)",
             transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
           }}
         >
-          {/* Top Delicate Rim-Lighting Specular Line */}
+          {/* Top Camera Notch */}
           <div
             aria-hidden="true"
             style={{
               position: "absolute",
               top: 0,
-              left: "12%",
-              right: "12%",
-              height: "1px",
-              background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35) 45%, rgba(255, 77, 94, 0.5) 50%, rgba(255, 255, 255, 0.35) 55%, transparent)",
-              zIndex: 4,
-              pointerEvents: "none"
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: isMobile ? "64px" : "98px",
+              height: isMobile ? "8px" : "11px",
+              background: "#08090C",
+              borderRadius: "0 0 6px 6px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 5,
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderTop: "none"
             }}
-          />
+          >
+            <span
+              style={{
+                width: isMobile ? "3px" : "4px",
+                height: isMobile ? "3px" : "4px",
+                borderRadius: "50%",
+                background: "#0d2b1f",
+                border: "1px solid rgba(34, 197, 94, 0.4)",
+                display: "inline-block"
+              }}
+            />
+          </div>
 
-          {/* Screen Inner Frame */}
+          {/* Screen Inner Display */}
           <div
             style={{
               position: "relative",
               width: "100%",
-              borderRadius: isMobile ? "8px" : "10px",
+              borderRadius: isMobile ? "6px 6px 0 0" : "8px 8px 0 0",
               overflow: "hidden",
               background: "#000000",
-              boxShadow: "inset 0 0 0 1px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.6)",
+              boxShadow: "inset 0 0 0 1px rgba(0, 0, 0, 0.95)",
               lineHeight: 0
             }}
           >
@@ -164,31 +186,67 @@ export const RoomShowcase = ({
               style={{
                 position: "absolute",
                 inset: 0,
-                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0%, transparent 40%)",
+                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%)",
                 pointerEvents: "none",
-                zIndex: 3
+                zIndex: 4
               }}
             />
           </div>
         </div>
 
-        {/* Soft Ambient Floor Reflection */}
+        {/* ========================================================= */}
+        {/* MACBOOK BASE / CHASSIS & THUMB GROOVE                     */}
+        {/* ========================================================= */}
         <div
           aria-hidden="true"
           style={{
-            width: isMobile ? "220px" : "440px",
-            height: "2px",
-            margin: isMobile ? "10px auto 0" : "14px auto 0",
-            background: "linear-gradient(90deg, transparent, rgba(255, 20, 48, 0.6), transparent)",
-            borderRadius: "2px",
-            filter: "blur(1px)",
-            boxShadow: "0 0 16px 3px rgba(255, 20, 48, 0.35)"
+            position: "relative",
+            zIndex: 3,
+            margin: isMobile ? "0 -4px" : "0 -12px"
           }}
-        />
+        >
+          {/* Laptop Base Body */}
+          <div
+            style={{
+              height: isMobile ? "9px" : "13px",
+              background: "linear-gradient(180deg, #242732 0%, #15161D 60%, #0D0E13 100%)",
+              borderRadius: isMobile ? "0 0 9px 9px" : "0 0 14px 14px",
+              border: "1px solid rgba(255, 255, 255, 0.16)",
+              borderTop: "1px solid rgba(255, 255, 255, 0.28)",
+              boxShadow: "0 14px 35px -5px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.18)",
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "center",
+              position: "relative"
+            }}
+          >
+            {/* Center Thumb Notch / Open Groove */}
+            <div
+              style={{
+                width: isMobile ? "54px" : "88px",
+                height: isMobile ? "3px" : "4px",
+                background: "#08090C",
+                borderRadius: "0 0 4px 4px",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
+              }}
+            />
+          </div>
+
+          {/* Under-Chassis Desk Surface Red Glow Bleed */}
+          <div
+            style={{
+              width: "75%",
+              height: "4px",
+              margin: "2px auto 0",
+              background: "radial-gradient(ellipse at center, rgba(255, 20, 48, 0.6) 0%, transparent 75%)",
+              filter: "blur(4px)"
+            }}
+          />
+        </div>
       </div>
 
       {/* ========================================================= */}
-      {/* 3. CLEAN ACTION BUTTONS: Sleek, high-converting           */}
+      {/* 3. CLEAN ACTION BUTTONS                                   */}
       {/* ========================================================= */}
       <div
         style={{
