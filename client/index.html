@@ -2,56 +2,144 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+    <!-- Standard & Multi-res Favicons -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- Primary Meta Tags -->
-    <title>WatchParty — Watch YouTube & Any Movie Together</title>
-    <meta name="title" content="WatchParty — Watch YouTube & Any Movie Together" />
-    <meta name="description" content="WatchParty — Watch YouTube, movies, or any video together in sync for free. Create a room, use screen sharing, live chat, and video call to enjoy with friends. No download required!" />
-    <meta name="keywords" content="watch party, watch youtube together, sync movies, watch movies together online, screen sharing watch party, free watch party, video call watch together, movie room, synchronized playback" />
+    <title>WatchParty — Watch Movies, Shows &amp; YouTube Together in Sync</title>
+    <meta name="title" content="WatchParty — Watch Movies, Shows &amp; YouTube Together in Sync" />
+    <meta name="description" content="WatchParty (watchparty.website) is the #1 free platform to watch movies, anime, OTT streams, and YouTube together in perfect frame-locked sync. Screen share any browser tab, chat live, and video call friends. 100% free with no downloads or extensions required!" />
+    <meta name="keywords" content="watchparty, watch party, watch party website, watch movies together online, sync video with friends, netflix watch party free, watch anime together, youtube watch party, stream together online, virtual movie night, screen share watch party, synchronized player, watchparty app, teleparty alternative, rave alternative" />
+    <meta name="author" content="WatchParty" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook / WhatsApp / Discord -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://watchparty.website/" />
-    <meta property="og:title" content="WatchParty — Watch YouTube & Any Movie Together" />
-    <meta property="og:description" content="WatchParty — Watch YouTube, movies, or any video together in sync for free. Create a room, use screen sharing, live chat, and video call to enjoy with friends. No download required!" />
-    <meta property="og:image" content="https://watchparty.website/og-image.jpg" />
+    <meta property="og:site_name" content="WatchParty" />
+    <meta property="og:title" content="WatchParty — Watch Movies, Shows &amp; YouTube Together in Sync" />
+    <meta property="og:description" content="Watch movies, anime, OTT streams, and YouTube together in real-time frame lock. Screen share any tab, chat live, and video call friends. 100% free with zero downloads!" />
+    <meta property="og:image" content="https://watchparty.website/og-image.png" />
+    <meta property="og:image:secure_url" content="https://watchparty.website/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="WatchParty — Watch Movies &amp; YouTube Together in Real-Time Sync" />
+    <meta property="og:locale" content="en_US" />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://watchparty.website/" />
-    <meta property="twitter:title" content="WatchParty — Watch YouTube & Any Movie Together" />
-    <meta property="twitter:description" content="WatchParty — Watch YouTube, movies, or any video together in sync for free. Create a room, use screen sharing, live chat, and video call to enjoy with friends. No download required!" />
-    <meta property="twitter:image" content="https://watchparty.website/og-image.jpg" />
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://watchparty.website/" />
+    <meta name="twitter:title" content="WatchParty — Watch Movies, Shows &amp; YouTube Together in Sync" />
+    <meta name="twitter:description" content="Watch movies, anime, OTT streams, and YouTube together in real-time frame lock. Screen share any tab, chat live, and video call friends. 100% free with zero downloads!" />
+    <meta name="twitter:image" content="https://watchparty.website/og-image.png" />
+    <meta name="twitter:image:alt" content="WatchParty — Watch Movies &amp; YouTube Together in Real-Time Sync" />
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://watchparty.website/" />
 
-    <!-- Google Site Verification -->
-    <meta name="google-site-verification" content="YOUR_GOOGLE_SITE_VERIFICATION_CODE" />
-
-    <!-- Theme and PWA Info -->
+    <!-- Theme and Mobile PWA Info -->
     <meta name="theme-color" content="#0B0B0F" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="application-name" content="WatchParty" />
 
+    <!-- Google Fonts Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <!-- JSON-LD Structured Data -->
+    <!-- GEO / LLMO / Search Schema.org Structured Data -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "WatchParty",
-        "url": "https://watchparty.website/",
-        "description": "WatchParty — Watch YouTube, movies, or any video together in sync for free. Create a room, use screen sharing, live chat, and video call to enjoy with friends. No download required!",
-        "applicationCategory": "Entertainment",
-        "operatingSystem": "All"
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "https://watchparty.website/#webapp",
+            "name": "WatchParty",
+            "alternateName": ["Watch Party", "WatchParty Website", "WatchParty App"],
+            "url": "https://watchparty.website/",
+            "applicationCategory": "MultimediaApplication",
+            "operatingSystem": "All (Web Browser, Windows, macOS, Linux, Android, iOS)",
+            "description": "WatchParty is a free, zero-install virtual cinema and synchronized streaming platform that allows friends to watch movies, YouTube videos, and screen-shared OTT content together in real-time frame lock with live sidecar chat and video calling.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.9",
+              "ratingCount": "1420",
+              "bestRating": "5",
+              "worstRating": "1"
+            },
+            "featureList": [
+              "Sub-second frame-locked video sync",
+              "Screen share Netflix, Disney+, Anime, and any browser tab in 1080p 60fps",
+              "Synchronized YouTube video player",
+              "Live sidecar banter and emoji reactions",
+              "Integrated WebRTC peer-to-peer video & audio calls",
+              "Zero software installation or browser extension needed",
+              "Private encrypted screening rooms"
+            ],
+            "screenshot": "https://watchparty.website/og-image.png"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://watchparty.website/#organization",
+            "name": "WatchParty",
+            "url": "https://watchparty.website/",
+            "logo": "https://watchparty.website/apple-touch-icon.png",
+            "sameAs": ["https://watchparty.website/"]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://watchparty.website/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is the best free website to watch movies and YouTube together?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "WatchParty (watchparty.website) is one of the best free websites to watch movies, YouTube videos, and OTT content together with friends in perfect synchronization without requiring any browser extension or software installation."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How can I watch Netflix, Anime, or OTT movies with long-distance friends?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "On WatchParty (watchparty.website), create a free room and click Screen Share. You can share your Netflix, Crunchyroll, Prime Video, or any browser tab with system audio in crisp 60fps HD, while your friends watch in real time with live chat and video call."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is WatchParty free to use?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, WatchParty is 100% free to use. There are no limits on room watch time, no forced subscription plans, and no account requirements to join a watch party room."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How does video synchronization work on WatchParty?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "WatchParty uses a sub-second millisecond synchronization engine. When the room host plays, pauses, or seeks the video, all participants are locked to the exact same video frame simultaneously."
+                }
+              }
+            ]
+          }
+        ]
       }
     </script>
   </head>

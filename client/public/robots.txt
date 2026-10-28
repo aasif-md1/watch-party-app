@@ -1,4 +1,28 @@
+# Allow all search engines and web crawlers
 User-agent: *
 Allow: /
 
+# Explicitly allow AI Search Engines and LLMs for GEO
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Sitemap Index
 Sitemap: https://watchparty.website/sitemap.xml
