@@ -336,28 +336,28 @@ const isValidYouTubeUrl = (url) => {
 /*  SHARED INPUT STYLES                                                    */
 /* ──────────────────────────────────────────────────────────────────────── */
 
-const inputStyle = {
+const getInputStyle = (isMobile) => ({
   width: "100%",
-  padding: "12px 16px",
+  padding: isMobile ? "9px 12px" : "12px 16px",
   background: "rgba(0, 0, 0, 0.5)",
   border: "1px solid rgba(255, 255, 255, 0.18)",
   borderRadius: "8px",
   color: "#FFFFFF",
-  fontSize: "0.92rem",
+  fontSize: isMobile ? "0.85rem" : "0.92rem",
   outline: "none",
   backdropFilter: "blur(4px)",
   transition: "border-color 0.2s ease",
   boxSizing: "border-box",
-};
+});
 
 const labelStyle = {
   display: "block",
-  fontSize: "0.74rem",
+  fontSize: "0.72rem",
   fontWeight: "700",
   textTransform: "uppercase",
   letterSpacing: "0.06em",
   color: "rgba(255, 255, 255, 0.65)",
-  marginBottom: "6px",
+  marginBottom: "4px",
 };
 
 /* ──────────────────────────────────────────────────────────────────────── */
@@ -537,7 +537,7 @@ const RoomSetup = () => {
 
   /* ─── Mode Switcher (shared between tabs) ─── */
   const ModeSwitcher = () => (
-    <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
+    <div style={{ display: "flex", gap: "8px", marginBottom: isMobile ? "12px" : "20px" }}>
       {[
         { key: "youtube", label: "YouTube Party", icon: Play },
         { key: "screenshare", label: "Screen Share", icon: MonitorPlay },
@@ -557,8 +557,8 @@ const RoomSetup = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: "7px",
-              padding: "11px",
+              gap: "6px",
+              padding: isMobile ? "8px 10px" : "11px",
               borderRadius: "8px",
               background: isActive
                 ? "rgba(229, 9, 20, 0.9)"
@@ -567,7 +567,7 @@ const RoomSetup = () => {
                 ? "1px solid #E50914"
                 : "1px solid rgba(255, 255, 255, 0.12)",
               color: isActive ? "#FFFFFF" : "rgba(255, 255, 255, 0.7)",
-              fontSize: "0.85rem",
+              fontSize: isMobile ? "0.78rem" : "0.85rem",
               fontWeight: "700",
               cursor: "pointer",
               transition: "all 0.2s ease",
@@ -575,7 +575,7 @@ const RoomSetup = () => {
             }}
           >
             <Icon
-              size={14}
+              size={13}
               fill={isActive && m.key === "youtube" ? "#FFFFFF" : "none"}
             />
             <span>{m.label}</span>
@@ -590,8 +590,8 @@ const RoomSetup = () => {
       style={{
         position: "relative",
         width: "100%",
-        minHeight: "100vh",
-        overflow: "hidden",
+        minHeight: isMobile ? "100dvh" : "100vh",
+        overflowX: "hidden",
         background: "#030308",
       }}
     >
@@ -606,18 +606,18 @@ const RoomSetup = () => {
         onClick={() => navigate("/")}
         style={{
           position: "fixed",
-          top: isMobile ? "16px" : "28px",
-          left: isMobile ? "16px" : "32px",
+          top: isMobile ? "12px" : "28px",
+          left: isMobile ? "12px" : "32px",
           zIndex: 20,
           display: "flex",
           alignItems: "center",
-          gap: "8px",
-          padding: "10px 18px",
+          gap: "6px",
+          padding: isMobile ? "7px 13px" : "10px 18px",
           borderRadius: "10px",
           background: "rgba(255, 255, 255, 0.06)",
           border: "1px solid rgba(255, 255, 255, 0.15)",
           color: "rgba(255, 255, 255, 0.8)",
-          fontSize: "0.88rem",
+          fontSize: isMobile ? "0.78rem" : "0.88rem",
           fontWeight: "600",
           cursor: "pointer",
           backdropFilter: "blur(12px)",
@@ -629,7 +629,7 @@ const RoomSetup = () => {
         }}
         whileTap={{ scale: 0.97 }}
       >
-        <ArrowLeft size={16} />
+        <ArrowLeft size={isMobile ? 14 : 16} />
         <span>Back</span>
       </motion.button>
 
@@ -641,8 +641,9 @@ const RoomSetup = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "100vh",
-          padding: isMobile ? "80px 16px 40px" : "40px 20px",
+          minHeight: isMobile ? "100dvh" : "100vh",
+          padding: isMobile ? "50px 12px 14px" : "40px 20px",
+          boxSizing: "border-box",
         }}
       >
         <motion.div
@@ -659,8 +660,8 @@ const RoomSetup = () => {
             style={{
               background: "rgba(14, 14, 18, 0.82)",
               border: "1px solid rgba(255, 255, 255, 0.1)",
-              borderRadius: "20px",
-              padding: isMobile ? "28px 22px" : "36px 32px",
+              borderRadius: isMobile ? "16px" : "20px",
+              padding: isMobile ? "18px 16px" : "36px 32px",
               backdropFilter: "blur(40px)",
               boxShadow:
                 "0 32px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05) inset",
@@ -672,9 +673,9 @@ const RoomSetup = () => {
               style={{
                 display: "flex",
                 background: "rgba(255, 255, 255, 0.04)",
-                borderRadius: "12px",
-                padding: "4px",
-                marginBottom: "24px",
+                borderRadius: "10px",
+                padding: "3px",
+                marginBottom: isMobile ? "14px" : "24px",
                 border: "1px solid rgba(255, 255, 255, 0.06)",
               }}
             >
@@ -694,9 +695,9 @@ const RoomSetup = () => {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      gap: "8px",
-                      padding: "12px 8px",
-                      borderRadius: "9px",
+                      gap: "6px",
+                      padding: isMobile ? "8px 6px" : "12px 8px",
+                      borderRadius: "8px",
                       background: isActive
                         ? "rgba(229, 9, 20, 0.85)"
                         : "transparent",
@@ -704,7 +705,7 @@ const RoomSetup = () => {
                       color: isActive
                         ? "#FFFFFF"
                         : "rgba(255, 255, 255, 0.5)",
-                      fontSize: "0.9rem",
+                      fontSize: isMobile ? "0.82rem" : "0.9rem",
                       fontWeight: "700",
                       cursor: "pointer",
                       transition: "all 0.25s ease",
@@ -714,7 +715,7 @@ const RoomSetup = () => {
                     }}
                   >
                     <Icon
-                      size={15}
+                      size={isMobile ? 13 : 15}
                       fill={
                         isActive && tab.key === "create" ? "#FFFFFF" : "none"
                       }
@@ -736,13 +737,13 @@ const RoomSetup = () => {
                   transition={{ duration: 0.25 }}
                 >
                   {/* Header */}
-                  <div style={{ marginBottom: "20px" }}>
+                  <div style={{ marginBottom: isMobile ? "12px" : "20px" }}>
                     <h2
                       style={{
-                        fontSize: "1.4rem",
+                        fontSize: isMobile ? "1.18rem" : "1.4rem",
                         fontWeight: "800",
                         color: "#FFFFFF",
-                        margin: "0 0 6px 0",
+                        margin: isMobile ? "0 0 3px 0" : "0 0 6px 0",
                         fontFamily: "Inter, sans-serif",
                       }}
                     >
@@ -750,10 +751,10 @@ const RoomSetup = () => {
                     </h2>
                     <p
                       style={{
-                        fontSize: "0.84rem",
+                        fontSize: isMobile ? "0.78rem" : "0.84rem",
                         color: "rgba(255, 255, 255, 0.55)",
                         margin: 0,
-                        lineHeight: 1.5,
+                        lineHeight: 1.4,
                       }}
                     >
                       Stream YouTube videos in sync or broadcast your screen in
@@ -770,10 +771,10 @@ const RoomSetup = () => {
                     <ModeSwitcher />
 
                     {/* Nickname */}
-                    <div style={{ marginBottom: "16px" }}>
+                    <div style={{ marginBottom: isMobile ? "10px" : "16px" }}>
                       <label style={labelStyle}>Your Nickname</label>
                       <input
-                        style={inputStyle}
+                        style={getInputStyle(isMobile)}
                         placeholder="e.g. CinemaFan"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -789,11 +790,11 @@ const RoomSetup = () => {
 
                     {/* YouTube URL or Screen Share info */}
                     {roomMode === "youtube" ? (
-                      <div style={{ marginBottom: "22px" }}>
+                      <div style={{ marginBottom: isMobile ? "14px" : "22px" }}>
                         <label style={labelStyle}>YouTube Video Link</label>
                         <input
                           style={{
-                            ...inputStyle,
+                            ...getInputStyle(isMobile),
                             borderColor: linkError
                               ? "#E50914"
                               : "rgba(255, 255, 255, 0.18)",
@@ -829,11 +830,11 @@ const RoomSetup = () => {
                           background: "rgba(255, 255, 255, 0.04)",
                           border: "1px solid rgba(255, 255, 255, 0.08)",
                           borderRadius: "8px",
-                          padding: "12px 16px",
+                          padding: isMobile ? "9px 12px" : "12px 16px",
                           color: "rgba(255, 255, 255, 0.7)",
-                          fontSize: "0.82rem",
-                          lineHeight: 1.5,
-                          marginBottom: "22px",
+                          fontSize: isMobile ? "0.78rem" : "0.82rem",
+                          lineHeight: 1.45,
+                          marginBottom: isMobile ? "14px" : "22px",
                         }}
                       >
                         You can select a browser tab, window, or entire desktop
@@ -848,24 +849,24 @@ const RoomSetup = () => {
                       whileTap={{ scale: 0.98 }}
                       style={{
                         width: "100%",
-                        padding: "14px 20px",
+                        padding: isMobile ? "11px 16px" : "14px 20px",
                         background:
                           "linear-gradient(135deg, #E50914 0%, #B80710 100%)",
                         border: "none",
-                        borderRadius: "12px",
+                        borderRadius: isMobile ? "10px" : "12px",
                         color: "#FFFFFF",
-                        fontSize: "1rem",
+                        fontSize: isMobile ? "0.92rem" : "1rem",
                         fontWeight: "800",
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        gap: "9px",
+                        gap: "8px",
                         boxShadow: "0 6px 24px rgba(229, 9, 20, 0.4)",
                         transition: "box-shadow 0.2s ease",
                       }}
                     >
-                      <Play size={16} fill="#FFFFFF" />
+                      <Play size={isMobile ? 14 : 16} fill="#FFFFFF" />
                       <span>Create Watch Room</span>
                     </motion.button>
                   </form>
@@ -1063,13 +1064,13 @@ const RoomSetup = () => {
                   transition={{ duration: 0.25 }}
                 >
                   {/* Header */}
-                  <div style={{ marginBottom: "20px" }}>
+                  <div style={{ marginBottom: isMobile ? "12px" : "20px" }}>
                     <h2
                       style={{
-                        fontSize: "1.4rem",
+                        fontSize: isMobile ? "1.18rem" : "1.4rem",
                         fontWeight: "800",
                         color: "#FFFFFF",
-                        margin: "0 0 6px 0",
+                        margin: isMobile ? "0 0 3px 0" : "0 0 6px 0",
                         fontFamily: "Inter, sans-serif",
                       }}
                     >
@@ -1077,10 +1078,10 @@ const RoomSetup = () => {
                     </h2>
                     <p
                       style={{
-                        fontSize: "0.84rem",
+                        fontSize: isMobile ? "0.78rem" : "0.84rem",
                         color: "rgba(255, 255, 255, 0.55)",
                         margin: 0,
-                        lineHeight: 1.5,
+                        lineHeight: 1.4,
                       }}
                     >
                       Enter the Room ID shared by your friend to join the
@@ -1097,10 +1098,10 @@ const RoomSetup = () => {
                     <ModeSwitcher />
 
                     {/* Nickname */}
-                    <div style={{ marginBottom: "16px" }}>
+                    <div style={{ marginBottom: isMobile ? "10px" : "16px" }}>
                       <label style={labelStyle}>Your Nickname</label>
                       <input
-                        style={inputStyle}
+                        style={getInputStyle(isMobile)}
                         placeholder="e.g. CinemaFan"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -1118,12 +1119,16 @@ const RoomSetup = () => {
                     <div
                       style={{
                         marginBottom:
-                          roomMode === "youtube" ? "16px" : "22px",
+                          isMobile
+                            ? "10px"
+                            : roomMode === "youtube"
+                            ? "16px"
+                            : "22px",
                       }}
                     >
                       <label style={labelStyle}>Room ID</label>
                       <input
-                        style={inputStyle}
+                        style={getInputStyle(isMobile)}
                         placeholder="Paste Room ID here..."
                         value={joinRoomId}
                         onChange={(e) => setJoinRoomId(e.target.value)}
@@ -1139,11 +1144,11 @@ const RoomSetup = () => {
 
                     {/* YouTube Link (if youtube mode) */}
                     {roomMode === "youtube" && (
-                      <div style={{ marginBottom: "22px" }}>
+                      <div style={{ marginBottom: isMobile ? "14px" : "22px" }}>
                         <label style={labelStyle}>YouTube Video Link</label>
                         <input
                           style={{
-                            ...inputStyle,
+                            ...getInputStyle(isMobile),
                             borderColor: linkError
                               ? "#E50914"
                               : "rgba(255, 255, 255, 0.18)",
@@ -1182,25 +1187,25 @@ const RoomSetup = () => {
                       whileTap={{ scale: 0.98 }}
                       style={{
                         width: "100%",
-                        padding: "14px 20px",
+                        padding: isMobile ? "11px 16px" : "14px 20px",
                         background:
                           "linear-gradient(135deg, #E50914 0%, #B80710 100%)",
                         border: "none",
-                        borderRadius: "12px",
+                        borderRadius: isMobile ? "10px" : "12px",
                         color: "#FFFFFF",
-                        fontSize: "1rem",
+                        fontSize: isMobile ? "0.92rem" : "1rem",
                         fontWeight: "800",
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        gap: "9px",
+                        gap: "8px",
                         boxShadow: "0 6px 24px rgba(229, 9, 20, 0.4)",
                         transition: "box-shadow 0.2s ease",
                       }}
                     >
                       <span>Join Room</span>
-                      <ArrowRight size={16} />
+                      <ArrowRight size={isMobile ? 14 : 16} />
                     </motion.button>
                   </form>
                 </motion.div>

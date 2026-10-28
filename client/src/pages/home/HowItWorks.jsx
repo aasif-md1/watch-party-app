@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronLeft, ChevronRight, Play, Monitor } from "lucide-react";
+import { Play, Monitor } from "lucide-react";
 
 export const HowItWorks = ({ isHinglish, setIsHinglish, isMobile }) => {
   // 0 = YouTube Sync, 1 = Screen Share & Movies
@@ -14,14 +14,6 @@ export const HowItWorks = ({ isHinglish, setIsHinglish, isMobile }) => {
       setMode(newMode);
       setAnimating(false);
     }, 140);
-  };
-
-  const handlePrev = () => {
-    switchMode(mode === 0 ? 1 : 0);
-  };
-
-  const handleNext = () => {
-    switchMode(mode === 1 ? 0 : 1);
   };
 
   // 4 Workflow steps for YouTube Sync (how to watch YouTube together)
@@ -229,72 +221,6 @@ export const HowItWorks = ({ isHinglish, setIsHinglish, isMobile }) => {
             >
               <Monitor size={13} />
               <span>Screen Share</span>
-            </button>
-          </div>
-
-          {/* Navigation Slide Arrows */}
-          <div style={{ display: "flex", gap: "8px" }}>
-            <button
-              type="button"
-              onClick={handlePrev}
-              aria-label="Previous mode"
-              title="Slide Mode"
-              style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "50%",
-                background: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                color: "#FFFFFF",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                transition: "all 0.18s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(229, 9, 20, 0.2)";
-                e.currentTarget.style.borderColor = "#E50914";
-                e.currentTarget.style.transform = "scale(1.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.12)";
-                e.currentTarget.style.transform = "scale(1)";
-              }}
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              type="button"
-              onClick={handleNext}
-              aria-label="Next mode"
-              title="Slide Mode"
-              style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "50%",
-                background: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                color: "#FFFFFF",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                transition: "all 0.18s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(229, 9, 20, 0.2)";
-                e.currentTarget.style.borderColor = "#E50914";
-                e.currentTarget.style.transform = "scale(1.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.12)";
-                e.currentTarget.style.transform = "scale(1)";
-              }}
-            >
-              <ChevronRight size={20} />
             </button>
           </div>
         </div>
