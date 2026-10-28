@@ -172,7 +172,7 @@ export const CtaBanner = ({
             </button>
           </div>
 
-          {/* Micro-caption matching mockup */}
+          {/* Micro-caption */}
           <span
             style={{
               color: "rgba(255, 255, 255, 0.72)",
@@ -181,7 +181,7 @@ export const CtaBanner = ({
               textAlign: "center"
             }}
           >
-            No signup hassle. Just good times.
+            Instant sync • HD streaming • Pure good times.
           </span>
         </div>
       </div>

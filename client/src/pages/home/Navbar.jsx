@@ -210,14 +210,23 @@ export const Navbar = ({
           height: "72px",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          padding: isMobile ? "0 20px" : "0 56px",
-          background: "#0A0B0E",
+          background: "#080809",
           borderBottom: "1px solid rgba(255, 255, 255, 0.07)",
           transition: "all 0.25s ease"
         }}
       >
-        {/* Left: Custom Unique Brand Logo */}
+        <div
+          style={{
+            maxWidth: "1440px",
+            width: "100%",
+            margin: "0 auto",
+            padding: isMobile ? "0 20px" : "0 36px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between"
+          }}
+        >
+          {/* Left: Custom Unique Brand Logo */}
         <div
           onClick={() => scrollToSection("home")}
           style={{
@@ -496,6 +505,7 @@ export const Navbar = ({
             </button>
           )}
         </div>
+      </div>
 
         {/* Mobile Drawer Menu */}
         {isMobile && mobileMenuOpen && (

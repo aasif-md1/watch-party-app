@@ -9,7 +9,6 @@ import {
   AlertCircle,
   ChevronRight,
   Clock,
-  Sparkles,
   HelpCircle
 } from "lucide-react";
 import { Navbar } from "./home/Navbar";
@@ -96,7 +95,7 @@ export default function Contact() {
         isMobile={false}
       />
 
-      <main style={{ flex: 1, paddingTop: "110px", paddingBottom: "80px", maxWidth: "1200px", margin: "0 auto", width: "100%", paddingLeft: "24px", paddingRight: "24px" }}>
+      <main style={{ flex: 1, paddingTop: "110px", paddingBottom: "80px", maxWidth: "1440px", margin: "0 auto", width: "100%", paddingLeft: "36px", paddingRight: "36px" }}>
         {/* Breadcrumb */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", marginBottom: "32px" }}>
           <Link to="/" style={{ color: "rgba(255,255,255,0.7)", textDecoration: "none" }}>Home</Link>
@@ -106,23 +105,6 @@ export default function Contact() {
 
         {/* Section Header */}
         <header style={{ marginBottom: "48px", maxWidth: "700px" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "5px 14px",
-              borderRadius: "30px",
-              background: "rgba(229, 9, 20, 0.1)",
-              border: "1px solid rgba(229, 9, 20, 0.35)",
-              marginBottom: "16px"
-            }}
-          >
-            <Sparkles size={14} style={{ color: "#E50914" }} />
-            <span style={{ color: "rgba(255, 255, 255, 0.9)", fontSize: "0.74rem", fontWeight: "700", letterSpacing: "0.12em", textTransform: "uppercase" }}>
-              24/7 DEVELOPER SUPPORT
-            </span>
-          </div>
 
           <h1 className="font-heading" style={{ fontSize: "clamp(2.3rem, 4.5vw, 3.6rem)", fontWeight: "900", lineHeight: 1.1, margin: "0 0 16px 0", letterSpacing: "-0.02em" }}>
             We'd Love to Hear<br />

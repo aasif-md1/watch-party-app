@@ -30,7 +30,7 @@ export const Footer = ({ onOpenInfoModal, isMobile }) => {
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
           {/* Logo Mark */}
           <Link to="/" style={{ textDecoration: "none" }}>
-            <BrandLogo size={28} showText={true} textSize="1.05rem" />
+            <BrandLogo size={28} showText={true} />
           </Link>
 
           {!isMobile && (

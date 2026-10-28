@@ -9,22 +9,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 
 const WPLogo = ({ size = 22 }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width={size} height={size} style={{ flexShrink: 0 }}>
-    <defs>
-      <linearGradient id="sLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#3b82f6" />
-        <stop offset="50%" stopColor="#2563eb" />
-        <stop offset="100%" stopColor="#60a5fa" />
-      </linearGradient>
-      <linearGradient id="sLogoBg" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#0c1929" />
-        <stop offset="100%" stopColor="#0f2035" />
-      </linearGradient>
-    </defs>
-    <rect width="100" height="100" rx="22" fill="url(#sLogoBg)" />
-    <path d="M22 28 L32 72 L44 44 L50 58 L56 44 L68 72 L78 28" fill="none" stroke="url(#sLogoGrad)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="50" cy="80" r="4" fill="#60a5fa" />
-  </svg>
+  <img
+    src="/logo_symbol.png"
+    alt="WatchParty"
+    width={size}
+    height={size}
+    style={{ flexShrink: 0, objectFit: "contain", display: "block" }}
+  />
 );
 
 const StreamRoom = () => {
