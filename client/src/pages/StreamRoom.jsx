@@ -6,6 +6,7 @@ import VideoPlayer from "../components/VideoPlayer";
 import ChatBox from "../components/ChatBox";
 import VideoChat from "../components/VideoChat";
 import { BrandLogo } from "../components/BrandLogo";
+import { MessageSquare, Video } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 
@@ -234,7 +235,8 @@ const StreamRoom = () => {
               className={`sidebar-tab ${activeTab === "chat" ? "active" : ""}`}
               onClick={() => setActiveTab("chat")}
             >
-              💬 Chat
+              <MessageSquare size={15} style={{ flexShrink: 0 }} />
+              <span>Chat</span>
               {unreadCount > 0 && <span className="tab-badge">{unreadCount}</span>}
             </button>
             <div className="tab-divider" />
@@ -242,7 +244,8 @@ const StreamRoom = () => {
               className={`sidebar-tab ${activeTab === "video" ? "active" : ""}`}
               onClick={() => setActiveTab("video")}
             >
-              📹 Video Call
+              <Video size={15} style={{ flexShrink: 0 }} />
+              <span>Video Call</span>
             </button>
           </div>
 
