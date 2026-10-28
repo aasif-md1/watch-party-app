@@ -226,20 +226,36 @@ export const HowItWorks = ({ isHinglish, setIsHinglish, isMobile }) => {
         </div>
       </div>
 
+      <style>{`
+        .hiw-steps-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          justify-content: center;
+          gap: 14px;
+          padding-bottom: 18px;
+        }
+        @media (max-width: 1024px) {
+          .hiw-steps-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 14px !important;
+            overflow-x: visible !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .hiw-steps-grid {
+            grid-template-columns: repeat(4, 220px) !important;
+            overflow-x: auto !important;
+            scroll-snap-type: x mandatory !important;
+            justify-content: flex-start !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+        }
+      `}</style>
+
       {/* 4 Step Cards — Proportions matched to reference screenshot */}
       <div
-        className="no-scrollbar"
+        className="no-scrollbar hiw-steps-grid"
         style={{
-          display: "grid",
-          gridTemplateColumns: isMobile
-            ? "repeat(4, 220px)"
-            : "repeat(4, 1fr)",
-          justifyContent: isMobile ? "flex-start" : "center",
-          gap: "14px",
-          overflowX: isMobile ? "auto" : "visible",
-          scrollSnapType: isMobile ? "x mandatory" : "none",
-          paddingBottom: "18px",
-          WebkitOverflowScrolling: "touch",
           opacity: animating ? 0.15 : 1,
           transform: animating ? "translateY(6px)" : "translateY(0)",
           transition: "opacity 0.15s ease, transform 0.15s ease"

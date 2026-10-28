@@ -44,15 +44,26 @@ export const FeatureGrid = ({ isHinglish, isMobile }) => {
         width: "100%"
       }}
     >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: isMobile
-            ? "1fr"
-            : "repeat(4, 1fr)",
-          gap: "16px"
-        }}
-      >
+      <style>{`
+        .feature-grid-row {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+        @media (max-width: 1024px) {
+          .feature-grid-row {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 14px !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .feature-grid-row {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+        }
+      `}</style>
+      <div className="feature-grid-row">
         {features.map((feat, idx) => (
           <div
             key={idx}
