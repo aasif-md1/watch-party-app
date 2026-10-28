@@ -23,8 +23,8 @@ const ProtectedRoute = () => {
           style={{
             width: "36px",
             height: "36px",
-            border: "3px solid rgba(59, 130, 246, 0.15)",
-            borderTop: "3px solid #3b82f6",
+            border: "3px solid rgba(255, 16, 40, 0.15)",
+            borderTop: "3px solid #FF1028",
             borderRadius: "50%",
             animation: "protectedSpin 0.8s linear infinite",
           }}

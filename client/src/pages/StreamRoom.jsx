@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useSocket } from "../hooks/useSocket";
 import { useAuth } from "../hooks/useAuth";
 import VideoPlayer from "../components/VideoPlayer";
 import ChatBox from "../components/ChatBox";
 import VideoChat from "../components/VideoChat";
+import { BrandLogo } from "../components/BrandLogo";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 
@@ -178,13 +179,15 @@ const StreamRoom = () => {
         className="stream-room-header"
       >
         <div className="header-left">
-          <span className="brand">Watch<span className="brand-accent">Party</span></span>
+          <Link to="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginRight: "6px" }} title="WatchParty Home">
+            <BrandLogo size={26} showText={true} />
+          </Link>
           <span className="room-badge">{roomId}</span>
           <span className="room-badge" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             {memberCount}
           </span>
-          <span className="room-badge" style={{ display: "flex", alignItems: "center", gap: "6px", color: "#60a5fa", border: "1px solid rgba(96,165,250,0.3)" }}>
+          <span className="room-badge" style={{ display: "flex", alignItems: "center", gap: "6px", color: "#FFFFFF", border: "1px solid rgba(255, 16, 40, 0.35)", background: "rgba(255, 16, 40, 0.08)" }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             {username}
           </span>
@@ -325,7 +328,7 @@ const StreamRoom = () => {
           letter-spacing: -0.3px;
           color: #f1f5f9;
         }
-        .brand-accent { color: #3b82f6; }
+        .brand-accent { color: #FF1028; }
         .room-badge {
           font-size: 0.7rem;
           font-weight: 600;
@@ -374,7 +377,7 @@ const StreamRoom = () => {
           transition: all 0.15s;
         }
         .btn-icon:hover { background: rgba(255,255,255,0.08); color: #f1f5f9; }
-        .btn-icon.active { background: rgba(37,99,235,0.15); color: #3b82f6; border-color: rgba(59,130,246,0.3); }
+        .btn-icon.active { background: rgba(255,16,40,0.15); color: #FF1028; border-color: rgba(255,16,40,0.35); }
         .btn-leave {
           background: transparent;
           border: 1px solid rgba(239,68,68,0.25);
@@ -440,7 +443,7 @@ const StreamRoom = () => {
           transition: all 0.2s;
         }
         .sidebar-tab:hover { background: rgba(255,255,255,0.04); color: #f1f5f9; }
-        .sidebar-tab.active { background: rgba(37,99,235,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.15); }
+        .sidebar-tab.active { background: rgba(255,16,40,0.12); color: #FF1028; border: 1px solid rgba(255,16,40,0.25); }
         .tab-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.08); }
         .tab-badge {
           background: #ef4444; color: #fff; font-size: 0.65rem;

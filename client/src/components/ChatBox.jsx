@@ -145,7 +145,8 @@ const ChatBox = ({ socket, room, username }) => {
         }
         .chatbox-dot {
           width: 6px; height: 6px; border-radius: 50%;
-          background: #3b82f6;
+          background: #FF1028;
+          box-shadow: 0 0 8px rgba(255, 16, 40, 0.6);
         }
         .chatbox-title {
           font-size: 0.85rem;
@@ -207,7 +208,7 @@ const ChatBox = ({ socket, room, username }) => {
           word-break: break-word;
         }
         .bubble-mine {
-          background: linear-gradient(135deg, #2563eb, #3b82f6);
+          background: linear-gradient(135deg, #FF1028 0%, #D4081E 100%);
           border-bottom-right-radius: 4px;
         }
         .bubble-other {
@@ -263,24 +264,30 @@ const ChatBox = ({ socket, room, username }) => {
           text-align: right;
         }
 
+        .chatbox-input-wrap:focus-within {
+          border-color: rgba(255, 16, 40, 0.4);
+          background: rgba(255, 16, 40, 0.03);
+        }
         .chatbox-send {
           width: 34px; height: 34px;
           border-radius: 8px;
-          background: linear-gradient(135deg, #2563eb, #3b82f6);
+          background: linear-gradient(135deg, #FF1028 0%, #D4081E 100%);
           color: #fff;
           border: none;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: opacity 0.15s;
+          transition: all 0.15s ease;
           flex-shrink: 0;
+          box-shadow: 0 2px 10px rgba(255, 16, 40, 0.35);
         }
         .chatbox-send:disabled {
           opacity: 0.3;
           cursor: default;
+          box-shadow: none;
         }
-        .chatbox-send:hover:not(:disabled) { opacity: 0.85; }
+        .chatbox-send:hover:not(:disabled) { opacity: 0.9; transform: scale(1.04); }
       `}</style>
     </div>
   );

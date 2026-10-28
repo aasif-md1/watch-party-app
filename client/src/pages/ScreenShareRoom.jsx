@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useSocket } from "../hooks/useSocket";
 import { useAuth } from "../hooks/useAuth";
 import ChatBox from "../components/ChatBox";
 import VideoChat from "../components/VideoChat";
+import { BrandLogo } from "../components/BrandLogo";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 
@@ -331,13 +332,15 @@ const ScreenShareRoom = () => {
         className="screen-room-header"
       >
         <div className="header-left">
-          <span className="brand">Watch<span className="brand-accent">Party</span></span>
+          <Link to="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginRight: "6px" }} title="WatchParty Home">
+            <BrandLogo size={26} showText={true} />
+          </Link>
           <span className="room-badge">{roomId}</span>
           <span className="room-badge" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             {memberCount}
           </span>
-          <span className="room-badge" style={{ display: "flex", alignItems: "center", gap: "6px", color: "#60a5fa", border: "1px solid rgba(96,165,250,0.3)" }}>
+          <span className="room-badge" style={{ display: "flex", alignItems: "center", gap: "6px", color: "#FFFFFF", border: "1px solid rgba(255, 16, 40, 0.35)", background: "rgba(255, 16, 40, 0.08)" }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             {username}
           </span>
@@ -469,25 +472,25 @@ const ScreenShareRoom = () => {
             onClick={() => { setShowSidebar(true); setActiveTab("chat"); setChatToast(null); }}
             style={{
               position: "fixed", bottom: "16px", right: "16px", zIndex: 200,
-              background: "rgba(15, 23, 42, 0.95)", backdropFilter: "blur(12px)",
-              border: "1px solid rgba(59, 130, 246, 0.2)",
+              background: "rgba(14, 14, 18, 0.95)", backdropFilter: "blur(12px)",
+              border: "1px solid rgba(255, 16, 40, 0.3)",
               borderRadius: "12px", padding: "10px 14px",
               maxWidth: "280px", cursor: "pointer",
-              boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.7)",
               display: "flex", alignItems: "center", gap: "10px"
             }}
           >
             <div style={{
               width: "28px", height: "28px", borderRadius: "50%",
-              background: "linear-gradient(135deg, #2563eb, #3b82f6)",
+              background: "linear-gradient(135deg, #FF1028, #D4081E)",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: "0.7rem", fontWeight: "700", color: "#fff", flexShrink: 0
             }}>
               {chatToast.author?.charAt(0).toUpperCase()}
             </div>
             <div style={{ minWidth: 0 }}>
-              <p style={{ color: "#60a5fa", fontSize: "0.68rem", fontWeight: "600", margin: 0, lineHeight: 1 }}>{chatToast.author}</p>
-              <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.75rem", margin: "3px 0 0 0", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatToast.message}</p>
+              <p style={{ color: "#FF5A78", fontSize: "0.68rem", fontWeight: "600", margin: 0, lineHeight: 1 }}>{chatToast.author}</p>
+              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.75rem", margin: "3px 0 0 0", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatToast.message}</p>
             </div>
           </motion.div>
         )}
@@ -531,7 +534,7 @@ const ScreenShareRoom = () => {
           letter-spacing: -0.3px;
           color: #f1f5f9;
         }
-        .brand-accent { color: #3b82f6; }
+        .brand-accent { color: #FF1028; }
         .room-badge {
           font-size: 0.7rem;
           font-weight: 600;
@@ -555,18 +558,19 @@ const ScreenShareRoom = () => {
           gap: 8px;
         }
         .btn-share {
-          background: linear-gradient(135deg, #2563eb, #3b82f6);
+          background: linear-gradient(135deg, #FF1028 0%, #D4081E 100%);
           color: #fff;
           border: none;
-          padding: 6px 16px;
+          padding: 7px 18px;
           border-radius: 8px;
           font-size: 0.78rem;
-          font-weight: 600;
+          font-weight: 700;
           cursor: pointer;
-          transition: opacity 0.15s;
+          transition: all 0.15s ease;
           letter-spacing: 0.2px;
+          box-shadow: 0 4px 14px rgba(255, 16, 40, 0.35);
         }
-        .btn-share:hover { opacity: 0.85; }
+        .btn-share:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-stop {
           background: #ef4444;
           color: #fff;
@@ -592,7 +596,7 @@ const ScreenShareRoom = () => {
           transition: all 0.15s;
         }
         .btn-icon:hover { background: rgba(255,255,255,0.08); color: #f1f5f9; }
-        .btn-icon.active { background: rgba(37,99,235,0.15); color: #3b82f6; border-color: rgba(59,130,246,0.3); }
+        .btn-icon.active { background: rgba(255,16,40,0.15); color: #FF1028; border-color: rgba(255,16,40,0.35); }
         .btn-leave {
           background: transparent;
           border: 1px solid rgba(239,68,68,0.25);
@@ -732,7 +736,7 @@ const ScreenShareRoom = () => {
           transition: all 0.2s;
         }
         .sidebar-tab:hover { background: rgba(255,255,255,0.04); color: #f1f5f9; }
-        .sidebar-tab.active { background: rgba(37,99,235,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.15); }
+        .sidebar-tab.active { background: rgba(255,16,40,0.12); color: #FF1028; border: 1px solid rgba(255,16,40,0.25); }
         .tab-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.08); }
         .tab-badge {
           background: #ef4444; color: #fff; font-size: 0.65rem;
