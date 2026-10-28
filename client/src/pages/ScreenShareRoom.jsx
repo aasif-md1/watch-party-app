@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 import ChatBox from "../components/ChatBox";
 import VideoChat from "../components/VideoChat";
 import { BrandLogo } from "../components/BrandLogo";
-import { MessageSquare, Video } from "lucide-react";
+import { MessageSquare, Video, ScreenShare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 
@@ -352,11 +352,13 @@ const ScreenShareRoom = () => {
           {/* Action buttons */}
           {!isSharing ? (
             <motion.button whileTap={{ scale: 0.95 }} className="btn-share" onClick={startSharing}>
-              Share Screen
+              <ScreenShare size={15} style={{ color: "#FF1028", flexShrink: 0 }} />
+              <span>Share Screen</span>
             </motion.button>
           ) : isPresenter ? (
             <motion.button whileTap={{ scale: 0.95 }} className="btn-stop" onClick={stopSharing}>
-              Stop Sharing
+              <ScreenShare size={15} style={{ flexShrink: 0 }} />
+              <span>Stop Sharing</span>
             </motion.button>
           ) : null}
 
@@ -561,31 +563,47 @@ const ScreenShareRoom = () => {
           gap: 8px;
         }
         .btn-share {
-          background: linear-gradient(135deg, #FF1028 0%, #D4081E 100%);
-          color: #fff;
-          border: none;
-          padding: 7px 18px;
-          border-radius: 8px;
-          font-size: 0.78rem;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all 0.15s ease;
-          letter-spacing: 0.2px;
-          box-shadow: 0 4px 14px rgba(255, 16, 40, 0.35);
-        }
-        .btn-share:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-stop {
-          background: #ef4444;
-          color: #fff;
-          border: none;
-          padding: 6px 16px;
+          background: rgba(255, 16, 40, 0.12);
+          color: #FFFFFF;
+          border: 1px solid rgba(255, 16, 40, 0.38);
+          padding: 7px 15px;
           border-radius: 8px;
           font-size: 0.78rem;
           font-weight: 600;
           cursor: pointer;
-          transition: opacity 0.15s;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          letter-spacing: 0.2px;
+          backdrop-filter: blur(8px);
         }
-        .btn-stop:hover { opacity: 0.85; }
+        .btn-share:hover {
+          background: rgba(255, 16, 40, 0.22);
+          border-color: rgba(255, 16, 40, 0.65);
+          box-shadow: 0 4px 16px rgba(255, 16, 40, 0.18);
+          transform: translateY(-1px);
+          color: #FFFFFF;
+        }
+        .btn-stop {
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          border: 1px solid rgba(239, 68, 68, 0.35);
+          padding: 7px 15px;
+          border-radius: 8px;
+          font-size: 0.78rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          transition: all 0.2s ease;
+        }
+        .btn-stop:hover {
+          background: rgba(239, 68, 68, 0.25);
+          border-color: rgba(239, 68, 68, 0.55);
+          color: #ffffff;
+        }
         .btn-icon {
           width: 36px; height: 36px;
           border-radius: 8px;
