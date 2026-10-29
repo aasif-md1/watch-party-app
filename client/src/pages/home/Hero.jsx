@@ -184,7 +184,7 @@ export const Hero = ({
           {/* Headline */}
           <h1 className="font-heading hero-title">
             <span style={{ color: "#FFFFFF", display: "block" }}>
-              {isHinglish ? "Saath Mein Dekhein." : "Watch Together."}
+              {isHinglish ? "Real Watch Party." : "The Ultimate Watch Party."}
             </span>
             <span
               style={{
