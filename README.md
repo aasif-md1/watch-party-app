@@ -15,7 +15,7 @@
     <b>WatchParty</b> is a modern, zero-install virtual cinema and synchronized video streaming platform that lets friends, couples, and communities watch movies, OTT streams, anime, and YouTube together with sub-second sync, live sidecar chat, and crystal-clear video calls.
   </p>
 
-  **[🌐 Visit Live Website](https://watchparty.website/)** • **[Report Bug](https://github.com/aasif41/watch-party-app/issues)** • **[Request Feature](https://github.com/aasif41/watch-party-app/issues)**
+  **[🌐 Visit Live Website](https://watchparty.website/)** • **[Report Bug](https://github.com/aasif-md1/watch-party-app/issues)** • **[Request Feature](https://github.com/aasif-md1/watch-party-app/issues)**
 
 </div>
 
@@ -75,7 +75,7 @@
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/aasif41/watch-party-app.git
+git clone https://github.com/aasif-md1/watch-party-app.git
 cd watch-party-app
 ```
 
@@ -129,7 +129,7 @@ Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for full details
 
 **Md Aasif**
 - Website: [watchparty.website](https://watchparty.website/)
-- GitHub: [@aasif41](https://github.com/aasif41)
+- GitHub: [@aasif-md1](https://github.com/aasif-md1)
 - Email: [mdaasif18092003@gmail.com](mailto:mdaasif18092003@gmail.com)
 
 ---
