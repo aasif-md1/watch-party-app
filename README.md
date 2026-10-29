@@ -5,7 +5,7 @@
   # WatchParty
   ### 🎬 Watch Movies, Shows &amp; YouTube Together in True Frame-Locked Sync
 
-  [![Live Demo](https://img.shields.io/badge/Live%20Demo-watchparty.website-FF1028?style=for-the-badge&logo=google-chrome&logoColor=white)](https://watchparty.website/)
+  [![Live Platform](https://img.shields.io/badge/Live%20Platform-watchparty.website-FF1028?style=for-the-badge&logo=google-chrome&logoColor=white)](https://watchparty.website/)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
   [![React 18](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
   [![Socket.io](https://img.shields.io/badge/Socket.io-4.7-010101?style=for-the-badge&logo=socketdotio&logoColor=white)](https://socket.io/)
@@ -15,7 +15,7 @@
     <b>WatchParty</b> is a modern, zero-install virtual cinema and synchronized video streaming platform that lets friends, couples, and communities watch movies, OTT streams, anime, and YouTube together with sub-second sync, live sidecar chat, and crystal-clear video calls.
   </p>
 
-  **[🌐 Visit Live Website](https://watchparty.website/)** • **[Report Bug](https://github.com/aasif-md1/watch-party-app/issues)** • **[Request Feature](https://github.com/aasif-md1/watch-party-app/issues)**
+  **[🌐 Visit Official Platform](https://watchparty.website/)** • **[Report Bug](https://github.com/aasif-md1/watch-party-app/issues)** • **[Request Feature](https://github.com/aasif-md1/watch-party-app/issues)**
 
 </div>
 
@@ -30,92 +30,65 @@
 
 ---
 
-## ✨ Features
+## 💡 How It Works
 
-- **⚡ Sub-Second Frame-Locked Sync**:
-  Host play, pause ya seek kare — room me sabhi viewers exact millisecond frame par synchronized rehte hain. Periodic heartbeat drift monitor keeps streams aligned within 1.5 seconds.
-- **🖥️ 1080p 60fps Screen Sharing**:
-  Share your entire desktop, a window, or a specific browser tab with system audio. Stream Netflix, Crunchyroll, Disney+, Prime Video, or local video files in crisp HD.
-- **💬 Live Sidecar Chat & Banter**:
-  Instant messaging alongside the screen that never obstructs your movie view. Messages are sanitized with DOMPurify for XSS protection, with live emoji reactions and sound toggles.
-- **🎙️ WebRTC Video & Voice Calling with Noise Gate**:
-  Peer-to-peer camera and microphone feeds. Audio passes through a custom Web Audio API processing chain (noise gate, highpass filter, compressor) filtering keyboard clicks and ambient noise.
-- **🎭 Real-Time Video Filters & Stickers**:
-  Apply neon, sepia, B&W, and vintage filters or drag interactive emoji stickers onto video feeds, synced live across all participants.
-- **🔐 Google Firebase Authentication**:
-  Quick, secure login with Google for personal profiles, custom room handles, and persistent room states.
-- **📱 Responsive Mobile & OLED Cinema Design**:
-  Optimized layouts for mobile phones, tablets, and desktop displays with eye-pleasing ambient red backlighting.
-- **🌐 English & Hinglish Toggle**:
-  Seamless one-click language toggle across the entire homepage.
+WatchParty brings the magic of co-watching to the web without needing third-party browser extensions or desktop downloads. Everything runs natively in modern web browsers:
+
+```
+[ Room Host ]
+      │
+      ├── Play / Pause / Seek Actions ──► [ WebSocket Sync Engine ] ──► [ All Viewers ]
+      │                                             │                     (Frame-Locked)
+      └── WebRTC HD Screen Stream ──────────────────┼─────────────────► [ Direct P2P Video ]
+                                                    │                     (Netflix / Anime / YouTube)
+[ Live Sidecar Chat & Audio Calls ] ────────────────┴─────────────────► [ Noise-Gated Audio Bus ]
+```
+
+### 1. Frame-Locked Video Synchronization Engine
+* **Millisecond Precision**: Whenever the host plays, pauses, or scrubs the timeline, playback timestamps are broadcasted via Socket.io to all room participants.
+* **Continuous Drift Monitor**: A background heartbeat checks viewer timestamps against the host. If network lag causes a client to drift more than 1.5 seconds, the engine smoothly seeks the viewer back to the exact current frame without buffering.
+
+### 2. Zero-Download Screen Sharing
+* **1080p 60fps Pipeline**: Users can screen-share any browser tab, desktop window, or application with crystal-clear system audio.
+* **Universal OTT Support**: Stream Netflix, Crunchyroll, Disney+, Prime Video, HBO Max, YouTube, or local video files seamlessly.
+
+### 3. WebRTC Peer-to-Peer Voice & Video
+* **Direct Mesh Networking**: Video and voice streams travel directly between participants with ultra-low latency.
+* **Web Audio API Noise Gate**: High-pass filtering and adaptive audio compression automatically eliminate mechanical keyboard clicks and room echoes.
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ Key Features
 
-| Technology | Purpose |
-|------------|---------|
-| **React 18 + Vite** | Fast modern frontend framework & build system |
-| **Node.js + Express** | High-performance backend API server |
-| **Socket.IO** | Sub-second real-time state synchronization & messaging |
-| **WebRTC** | Peer-to-peer audio, video, and screen streaming |
-| **Firebase Auth** | Google OAuth authentication & session tokens |
-| **Web Audio API** | Dynamic noise gate, audio filters, and voice processing |
-| **DOMPurify** | Robust chat message sanitization (XSS mitigation) |
-| **Tailwind CSS + Custom CSS** | Obsidian-dark theater design system & Ambilight effects |
-| **nanoid** | Cryptographically secure room ID generation |
+- **⚡ Sub-Second Frame-Locked Sync**: Real-time state coordination so everyone reacts to plot twists at the exact same moment.
+- **🖥️ Full HD Screen Sharing**: Low-latency screen streaming with full system audio pass-through.
+- **💬 Live Sidecar Chat**: Unobtrusive side panel chat with live emoji reactions, timestamps, and sound toggles.
+- **🎙️ WebRTC Video Calling**: Built-in webcam tiles with drag-and-drop video filters (neon, vintage, B&W).
+- **🛡️ Enterprise Sanitization**: Chat messages are sanitized with DOMPurify to prevent XSS vulnerabilities.
+- **🔐 Secure Google Authentication**: Optional 1-click Google OAuth for saving personal room names and custom profiles.
+- **📱 Responsive OLED Theater Interface**: Obsidian dark theme with cinematic glow effects engineered for mobile, tablet, and desktop screens.
+- **🌐 English & Hinglish Toggle**: Dual-language support built into the interface.
 
 ---
 
-## 🚀 Getting Started Locally
+## 🛠️ Technology Stack
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- `npm` or `yarn`
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/aasif-md1/watch-party-app.git
-cd watch-party-app
-```
-
-### 2. Setup the Server
-```bash
-cd server
-npm install
-npm run dev
-```
-The backend server runs on `http://localhost:5000`.
-
-### 3. Setup the Client
-Open a second terminal window:
-```bash
-cd client
-npm install
-npm run dev
-```
-The frontend application will start on `http://localhost:5173`.
+| Layer | Technologies | Purpose |
+|---|---|---|
+| **Frontend** | React 18, Vite | High-performance SPA with instant reactive UI updates |
+| **Styling** | Custom CSS, Tailwind | Cinema-dark glassmorphism, OLED theater aesthetics |
+| **Real-Time Sync** | Socket.IO | Low-latency state synchronization & bidirectional messaging |
+| **Audio / Video** | WebRTC, Web Audio API | Peer-to-peer screen sharing & noise-gated voice calling |
+| **Security** | DOMPurify, Firebase Auth | Strict input sanitization & Google OAuth session management |
+| **Room Management**| nanoid | Cryptographically secure unique room identifiers |
 
 ---
 
-## ⚙️ Environment Variables
+## 🔒 Privacy & Security
 
-### Client (`client/.env`)
-```env
-VITE_SERVER_URL=http://localhost:5000
-VITE_FIREBASE_API_KEY=your_firebase_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-```
-
-### Server (`server/.env`)
-```env
-PORT=5000
-CLIENT_URL=http://localhost:5173
-```
+* **No Extension Permissions**: Runs entirely in sandboxed browser tabs without requiring intrusive browser extension access.
+* **Private Screening Rooms**: Rooms use unguessable cryptographic IDs; only individuals with the direct link can join.
+* **Direct P2P Media**: Video and audio calls stream directly between peers rather than passing through centralized recording servers.
 
 ---
 
@@ -125,15 +98,15 @@ Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for full details
 
 ---
 
-## 👤 Author
+## 👤 Author & Maintainer
 
 **Md Aasif**
-- Website: [watchparty.website](https://watchparty.website/)
-- GitHub: [@aasif-md1](https://github.com/aasif-md1)
-- Email: [mdaasif18092003@gmail.com](mailto:mdaasif18092003@gmail.com)
+- **Platform**: [watchparty.website](https://watchparty.website/)
+- **GitHub**: [@aasif-md1](https://github.com/aasif-md1)
+- **Email**: [mdaasif18092003@gmail.com](mailto:mdaasif18092003@gmail.com)
 
 ---
 
 <div align="center">
-  <sub>Built with ❤️ for shared movie nights everywhere.</sub>
+  <sub>Designed &amp; engineered for synchronized shared movie nights.</sub>
 </div>
