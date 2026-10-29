@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowRight, Play, Users } from "lucide-react";
+import { ArrowRight, Play, Users, Lock, RotateCw, ChevronLeft, ChevronRight } from "lucide-react";
 
 export const RoomShowcase = ({
   openCreateModal,
@@ -69,13 +69,14 @@ export const RoomShowcase = ({
       </div>
 
       {/* ========================================================= */}
-      {/* 2. REALISTIC MACBOOK PRO CINEMA RIG MOCKUP               */}
+      {/* 2. AUTHENTIC 16:10 WIDESCREEN CINEMA TABLET               */}
+      {/* Real-world tablet proportions (16:10 ratio, NOT stretched) */}
       {/* ========================================================= */}
       <div
         style={{
           position: "relative",
           zIndex: 2,
-          maxWidth: isMobile ? "100%" : "890px",
+          maxWidth: isMobile ? "100%" : "780px",
           margin: "0 auto",
           padding: isMobile ? "0 4px" : "0 12px"
         }}
@@ -84,19 +85,17 @@ export const RoomShowcase = ({
       >
         {/* ========================================================= */}
         {/* SOFT RED AMBIENT BACKLIGHT GLOW (Ambilight Aura)          */}
-        {/* Radiates outside the laptop frame onto dark background    */}
-        {/* Soft, warm, eye-friendly, no harsh glare                  */}
         {/* ========================================================= */}
         <div
           aria-hidden="true"
           style={{
             position: "absolute",
-            inset: isMobile ? "-14px -10px -10px -10px" : "-36px -48px -20px -48px",
-            borderRadius: isMobile ? "20px" : "32px",
+            inset: isMobile ? "-14px -10px" : "-28px -36px",
+            borderRadius: isMobile ? "24px" : "36px",
             background: isHovered
-              ? "radial-gradient(ellipse at 50% 46%, rgba(255, 24, 48, 0.40) 0%, rgba(220, 16, 38, 0.24) 44%, rgba(180, 10, 28, 0.08) 72%, transparent 100%)"
-              : "radial-gradient(ellipse at 50% 46%, rgba(255, 24, 48, 0.30) 0%, rgba(220, 16, 38, 0.18) 44%, rgba(180, 10, 28, 0.05) 72%, transparent 100%)",
-            filter: isMobile ? "blur(26px)" : "blur(48px)",
+              ? "radial-gradient(ellipse at 50% 50%, rgba(255, 24, 48, 0.42) 0%, rgba(220, 16, 38, 0.24) 45%, rgba(180, 10, 28, 0.08) 72%, transparent 100%)"
+              : "radial-gradient(ellipse at 50% 50%, rgba(255, 24, 48, 0.30) 0%, rgba(220, 16, 38, 0.18) 45%, rgba(180, 10, 28, 0.05) 72%, transparent 100%)",
+            filter: isMobile ? "blur(24px)" : "blur(44px)",
             opacity: 0.95,
             transition: "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
             pointerEvents: "none",
@@ -105,143 +104,286 @@ export const RoomShowcase = ({
         />
 
         {/* ========================================================= */}
-        {/* MACBOOK DISPLAY LID                                       */}
+        {/* AUTHENTIC 16:10 SOLID UNIBODY TABLET (Real-World Ratio)   */}
+        {/* Single piece lifts on hover - ZERO separation             */}
         {/* ========================================================= */}
         <div
           style={{
             position: "relative",
             zIndex: 2,
-            background: "linear-gradient(180deg, #181922 0%, #101117 100%)",
-            borderRadius: isMobile ? "11px 11px 2px 2px" : "16px 16px 3px 3px",
-            padding: isMobile ? "5px 5px 0 5px" : "9px 9px 0 9px",
-            border: "1px solid rgba(255, 255, 255, 0.16)",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.95)",
-            /* Multi-layer soft ambient box-shadow */
+            width: "100%",
+            aspectRatio: "16 / 10",
+            background: "linear-gradient(180deg, #1E1F29 0%, #13141B 50%, #0A0B10 100%)",
+            borderRadius: isMobile ? "16px" : "26px",
+            padding: isMobile ? "6px" : "11px",
+            border: "1px solid rgba(255, 255, 255, 0.18)",
+            borderTop: "1px solid rgba(255, 255, 255, 0.30)",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.10)",
             boxShadow: isHovered
-              ? "0 25px 70px -10px rgba(0, 0, 0, 0.95), 0 0 45px 6px rgba(255, 20, 48, 0.22), 0 0 95px 20px rgba(220, 14, 38, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.22)"
-              : "0 18px 55px -10px rgba(0, 0, 0, 0.90), 0 0 35px 5px rgba(255, 20, 48, 0.16), 0 0 75px 15px rgba(220, 14, 38, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.16)",
-            transform: isHovered ? "translateY(-3px)" : "translateY(0)",
-            transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
+              ? "0 30px 80px -10px rgba(0, 0, 0, 0.98), 0 0 50px 8px rgba(229, 9, 20, 0.24), 0 0 100px 24px rgba(229, 9, 20, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
+              : "0 22px 60px -10px rgba(0, 0, 0, 0.95), 0 0 35px 5px rgba(229, 9, 20, 0.16), 0 0 75px 15px rgba(229, 9, 20, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.18)",
+            transform: isHovered ? "translateY(-4px) scale(1.008)" : "translateY(0) scale(1)",
+            transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
+            display: "flex",
+            flexDirection: "column",
+            boxSizing: "border-box"
           }}
         >
-          {/* Top Camera Notch */}
+          {/* Subtle Stylus Magnetic Charging Strip on Top Edge */}
           <div
             aria-hidden="true"
             style={{
               position: "absolute",
-              top: 0,
+              top: "-1px",
               left: "50%",
               transform: "translateX(-50%)",
-              width: isMobile ? "64px" : "98px",
-              height: isMobile ? "8px" : "11px",
-              background: "#08090C",
-              borderRadius: "0 0 6px 6px",
+              width: isMobile ? "60px" : "90px",
+              height: isMobile ? "1.5px" : "2px",
+              background: "rgba(255, 255, 255, 0.32)",
+              borderRadius: "0 0 2px 2px",
+              boxShadow: "0 0 3px rgba(255, 255, 255, 0.4)"
+            }}
+          />
+
+          {/* Centered Front Camera & Ambient Sensor inside Top Bezel */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: isMobile ? "2.5px" : "4px",
+              left: "50%",
+              transform: "translateX(-50%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              gap: isMobile ? "3px" : "5px",
               zIndex: 5,
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              borderTop: "none"
+              pointerEvents: "none"
             }}
           >
+            {/* Ambient Sensor */}
             <span
               style={{
-                width: isMobile ? "3px" : "4px",
-                height: isMobile ? "3px" : "4px",
+                width: isMobile ? "2px" : "3px",
+                height: isMobile ? "2px" : "3px",
                 borderRadius: "50%",
-                background: "#0d2b1f",
-                border: "1px solid rgba(34, 197, 94, 0.4)",
+                background: "#08090D",
+                display: "inline-block"
+              }}
+            />
+            {/* Front Camera Lens */}
+            <span
+              style={{
+                width: isMobile ? "3.5px" : "5px",
+                height: isMobile ? "3.5px" : "5px",
+                borderRadius: "50%",
+                background: "radial-gradient(circle at 35% 35%, #18202A 0%, #050608 80%)",
+                border: "1px solid rgba(255, 255, 255, 0.22)",
+                boxShadow: "inset 0 1px 1px rgba(0, 0, 0, 0.9)",
+                display: "inline-block"
+              }}
+            />
+            {/* Status Indicator LED */}
+            <span
+              style={{
+                width: isMobile ? "1.5px" : "2px",
+                height: isMobile ? "1.5px" : "2px",
+                borderRadius: "50%",
+                background: "#22C55E",
+                boxShadow: "0 0 3px #22C55E, 0 0 6px rgba(34, 197, 94, 0.6)",
                 display: "inline-block"
               }}
             />
           </div>
 
-          {/* Screen Inner Display */}
+          {/* Inner Widescreen OLED Cinema Display (Full Height 16:10 Screen) */}
           <div
             style={{
               position: "relative",
               width: "100%",
-              borderRadius: isMobile ? "6px 6px 0 0" : "8px 8px 0 0",
+              height: "100%",
+              borderRadius: isMobile ? "11px" : "17px",
               overflow: "hidden",
-              background: "#000000",
-              boxShadow: "inset 0 0 0 1px rgba(0, 0, 0, 0.95)",
-              lineHeight: 0
-            }}
-          >
-            <img
-              src="/images/cinematic-room-preview.png"
-              alt="WatchParty Live Movie Screening with Chat"
-              loading="lazy"
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "block",
-                objectFit: "contain"
-              }}
-            />
-
-            {/* Subtle Screen Glass Sheen Overlay */}
-            <div
-              aria-hidden="true"
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%)",
-                pointerEvents: "none",
-                zIndex: 4
-              }}
-            />
-          </div>
-        </div>
-
-        {/* ========================================================= */}
-        {/* MACBOOK BASE / CHASSIS & THUMB GROOVE                     */}
-        {/* ========================================================= */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: "relative",
-            zIndex: 3,
-            margin: isMobile ? "0 -4px" : "0 -12px"
-          }}
-        >
-          {/* Laptop Base Body */}
-          <div
-            style={{
-              height: isMobile ? "9px" : "13px",
-              background: "linear-gradient(180deg, #242732 0%, #15161D 60%, #0D0E13 100%)",
-              borderRadius: isMobile ? "0 0 9px 9px" : "0 0 14px 14px",
-              border: "1px solid rgba(255, 255, 255, 0.16)",
-              borderTop: "1px solid rgba(255, 255, 255, 0.28)",
-              boxShadow: "0 14px 35px -5px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.18)",
+              background: "#08090C",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              boxShadow: "inset 0 0 0 1px rgba(0, 0, 0, 0.95), 0 2px 8px rgba(0, 0, 0, 0.7)",
               display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "center",
-              position: "relative"
+              flexDirection: "column",
+              justifyContent: "space-between"
             }}
           >
-            {/* Center Thumb Notch / Open Groove */}
+            {/* Tablet Status Bar */}
             <div
               style={{
-                width: isMobile ? "54px" : "88px",
-                height: isMobile ? "3px" : "4px",
-                background: "#08090C",
-                borderRadius: "0 0 4px 4px",
-                borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
+                height: isMobile ? "13px" : "18px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: isMobile ? "2px 10px 0" : "3px 14px 0",
+                color: "rgba(255, 255, 255, 0.85)",
+                fontSize: isMobile ? "6px" : "9px",
+                fontWeight: 600,
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
+                letterSpacing: "-0.01em",
+                zIndex: 3,
+                userSelect: "none"
               }}
-            />
-          </div>
+            >
+              <span>9:41</span>
+              <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "3px" : "6px" }}>
+                <span style={{ fontSize: isMobile ? "5px" : "7.5px", opacity: 0.85 }}>5G</span>
+                <div
+                  style={{
+                    width: isMobile ? "13px" : "18px",
+                    height: isMobile ? "6.5px" : "9px",
+                    borderRadius: "2px",
+                    border: "1px solid rgba(255, 255, 255, 0.7)",
+                    padding: "1px",
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                >
+                  <div style={{ width: "100%", height: "100%", borderRadius: "1px", background: "#22C55E" }} />
+                </div>
+              </div>
+            </div>
 
-          {/* Under-Chassis Desk Surface Red Glow Bleed */}
-          <div
-            style={{
-              width: "75%",
-              height: "4px",
-              margin: "2px auto 0",
-              background: "radial-gradient(ellipse at center, rgba(255, 20, 48, 0.6) 0%, transparent 75%)",
-              filter: "blur(4px)"
-            }}
-          />
+            {/* Tablet Browser Omnibar / Address Bar (Showing watchparty.website) */}
+            <div
+              style={{
+                height: isMobile ? "18px" : "26px",
+                background: "rgba(18, 19, 27, 0.92)",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                borderTop: "1px solid rgba(255, 255, 255, 0.04)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: isMobile ? "0 8px" : "0 12px",
+                zIndex: 4,
+                userSelect: "none"
+              }}
+            >
+              {/* Left Navigation Buttons */}
+              <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "4px" : "8px", color: "rgba(255, 255, 255, 0.4)" }}>
+                <ChevronLeft size={isMobile ? 10 : 13} />
+                <ChevronRight size={isMobile ? 10 : 13} />
+              </div>
+
+              {/* Center: Domain Address Pill */}
+              <div
+                style={{
+                  flex: isMobile ? "0 1 76%" : "0 1 62%",
+                  height: isMobile ? "13px" : "19px",
+                  background: "rgba(8, 9, 13, 0.95)",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  borderRadius: isMobile ? "4px" : "5px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: isMobile ? "0 6px" : "0 9px",
+                  boxShadow: "inset 0 1px 2px rgba(0, 0, 0, 0.7)"
+                }}
+              >
+                {/* SSL Lock & Domain */}
+                <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "3px" : "5px" }}>
+                  <Lock size={isMobile ? 6.5 : 9} color="#22C55E" strokeWidth={2.5} />
+                  <span
+                    style={{
+                      fontSize: isMobile ? "6.5px" : "9.5px",
+                      fontWeight: 600,
+                      color: "#FFFFFF",
+                      fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif",
+                      letterSpacing: "-0.01em"
+                    }}
+                  >
+                    watchparty.website
+                  </span>
+                </div>
+
+                {/* Refresh Icon */}
+                <RotateCw size={isMobile ? 6 : 8.5} color="rgba(255, 255, 255, 0.55)" strokeWidth={2.5} />
+              </div>
+
+              {/* Right: Tab Count Badge */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: isMobile ? "11px" : "15px",
+                  height: isMobile ? "11px" : "15px",
+                  borderRadius: "2.5px",
+                  border: "1px solid rgba(255, 255, 255, 0.35)",
+                  color: "rgba(255, 255, 255, 0.75)",
+                  fontSize: isMobile ? "5.5px" : "8px",
+                  fontWeight: 700
+                }}
+              >
+                1
+              </div>
+            </div>
+
+            {/* Authentic WatchParty Cinema Room Image (Centered in Native Proportions, Never Stretched!) */}
+            <div
+              style={{
+                flex: 1,
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                lineHeight: 0,
+                width: "100%",
+                overflow: "hidden"
+              }}
+            >
+              <img
+                src="/images/cinematic-room-preview.png"
+                alt="WatchParty Live Movie Screening with Chat"
+                loading="lazy"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  maxHeight: "100%",
+                  objectFit: "contain",
+                  display: "block"
+                }}
+              />
+
+              {/* Ultra-subtle Screen Glass Reflection Sheen */}
+              <div
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 32%, transparent 55%)",
+                  pointerEvents: "none",
+                  zIndex: 4
+                }}
+              />
+            </div>
+
+            {/* Bottom Navigation Pill */}
+            <div
+              style={{
+                height: isMobile ? "10px" : "14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingBottom: isMobile ? "2px" : "4px",
+                zIndex: 3
+              }}
+            >
+              <div
+                style={{
+                  width: isMobile ? "64px" : "100px",
+                  height: isMobile ? "2px" : "3px",
+                  background: "rgba(255, 255, 255, 0.50)",
+                  borderRadius: "3px",
+                  boxShadow: "0 1px 3px rgba(0, 0, 0, 0.8)"
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
