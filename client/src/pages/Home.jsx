@@ -46,15 +46,15 @@ const Home = () => {
       <div className="film-grain-overlay" aria-hidden="true" />
 
       <Helmet>
-        <title>WatchParty — Watch YouTube & Any Movie Together</title>
+        <title>WatchParty — Watch Movies, Shows &amp; YouTube Together</title>
         <meta
           name="description"
-          content="WatchParty — Watch YouTube together in sync for free. Enjoy live chat, video call, screen sharing, and synchronized playback with friends. No download required!"
+          content="Watch movies, anime, and YouTube together with friends in perfect frame-locked sync. Screen share any browser tab, enjoy live chat, and crystal-clear video calls with zero downloads."
         />
-        <meta property="og:title" content="WatchParty — Watch YouTube Together in Sync" />
+        <meta property="og:title" content="WatchParty — Watch Movies, Shows &amp; YouTube Together" />
         <meta
           property="og:description"
-          content="WatchParty — Watch YouTube together in sync for free. Enjoy live chat, video call, screen sharing, and synchronized playback with friends. No download required!"
+          content="Watch movies, anime, and YouTube together with friends in perfect frame-locked sync. Screen share any browser tab, enjoy live chat, and crystal-clear video calls with zero downloads."
         />
         <meta property="og:url" content="https://watchparty.website/" />
         <link rel="canonical" href="https://watchparty.website/" />
