@@ -124,11 +124,12 @@ const ChatBox = ({ socket, room, username, userId }) => {
     if (el && container) {
       const elRect = el.getBoundingClientRect();
       const containerRect = container.getBoundingClientRect();
-      // If the message bubble is within 70px of the container's top edge, place below!
-      if (elRect.top - containerRect.top < 70) {
+      const spaceAbove = elRect.top - containerRect.top;
+      // If space above is less than 95px, or if it is the first message, place below so it never clips under header
+      if (spaceAbove < 95 || index === 0) {
         placement = "bottom";
       }
-    } else if (index === 0) {
+    } else if (index <= 1) {
       placement = "bottom";
     }
 
@@ -370,6 +371,8 @@ const ChatBox = ({ socket, room, username, userId }) => {
                         }}
                         exit={{ opacity: 0, scale: 0.8 }}
                         transition={{ duration: 0.12 }}
+                        onMouseEnter={() => handleMouseEnterMsg(content.id)}
+                        onMouseLeave={handleMouseLeaveMsg}
                         className={`reaction-popover ${
                           isMe ? "popover-right" : "popover-left"
                         } ${
@@ -567,7 +570,7 @@ const ChatBox = ({ socket, room, username, userId }) => {
         .chatbox-messages {
           flex: 1;
           overflow-y: auto;
-          padding: 16px 14px 14px 14px;
+          padding: 24px 14px 16px 14px;
           display: flex;
           flex-direction: column;
           gap: 10px;
@@ -716,15 +719,15 @@ const ChatBox = ({ socket, room, username, userId }) => {
           border: 1px solid rgba(255, 255, 255, 0.14);
           border-radius: 24px;
           padding: 4px 8px;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
           z-index: 50;
           white-space: nowrap;
         }
         .popover-top {
-          bottom: calc(100% + 6px);
+          bottom: calc(100% + 8px);
         }
         .popover-bottom {
-          top: calc(100% + 6px);
+          top: calc(100% + 8px);
         }
         .popover-right { right: 0; }
         .popover-left { left: 0; }

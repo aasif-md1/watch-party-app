@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { nanoid } from "nanoid";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
+import { useSocket } from "../hooks/useSocket";
 import {
   Play,
   Users,
@@ -366,6 +367,7 @@ const labelStyle = {
 
 const RoomSetup = () => {
   const { user, signInWithGoogle } = useAuth();
+  const socket = useSocket();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -464,13 +466,55 @@ const RoomSetup = () => {
     setGeneratedRoomId(newId);
     setCopied(false);
     setShowRoomCreated(true);
-  }, []);
+
+    const trimmedUsername = username.trim() || "Host";
+    localStorage.setItem("wp_username", trimmedUsername);
+
+    let hostUserId = user?.uid;
+    if (!hostUserId) {
+      hostUserId = sessionStorage.getItem("wp_userId") || localStorage.getItem("wp_userId");
+      if (!hostUserId) {
+        hostUserId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      }
+    }
+    sessionStorage.setItem("wp_userId", hostUserId);
+    localStorage.setItem("wp_userId", hostUserId);
+
+    // Host status is locked immediately so creator is recognized even if friends join early
+    localStorage.setItem(`wp_host_${newId}`, "true");
+    sessionStorage.setItem(`wp_host_${newId}`, "true");
+
+    // Register room on server right now
+    if (socket) {
+      socket.emit("create_room", {
+        roomId: newId,
+        hostUserId,
+        hostUsername: trimmedUsername,
+        roomType: roomMode,
+        videoUrl: roomMode === "youtube" ? videoUrl : "",
+      });
+    }
+  }, [username, user, roomMode, videoUrl, socket]);
 
   const executeJoinRoom = useCallback(() => {
-    localStorage.setItem("wp_username", username.trim());
-    if (user?.uid) localStorage.setItem("wp_userId", user.uid);
-    else if (!localStorage.getItem("wp_userId")) localStorage.setItem("wp_userId", `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`);
+    const trimmedUsername = username.trim() || "Watcher";
+    localStorage.setItem("wp_username", trimmedUsername);
+    let joinUserId = user?.uid;
+    if (!joinUserId) {
+      // Use sessionStorage so multiple tabs on the same computer have distinct IDs
+      joinUserId = sessionStorage.getItem("wp_userId");
+      if (!joinUserId) {
+        joinUserId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+        sessionStorage.setItem("wp_userId", joinUserId);
+      }
+    }
+    localStorage.setItem("wp_userId", joinUserId);
+    sessionStorage.setItem("wp_userId", joinUserId);
+
+    // Ensure joining participant is not marked as host
     localStorage.removeItem(`wp_host_${joinRoomId}`);
+    sessionStorage.removeItem(`wp_host_${joinRoomId}`);
+
     if (roomMode === "youtube") {
       localStorage.setItem("wp_videoUrl", videoUrl);
       localStorage.setItem("wp_roomMode", "youtube");
@@ -502,10 +546,17 @@ const RoomSetup = () => {
   };
 
   const enterGeneratedRoom = () => {
-    localStorage.setItem("wp_username", username.trim());
-    if (user?.uid) localStorage.setItem("wp_userId", user.uid);
-    else if (!localStorage.getItem("wp_userId")) localStorage.setItem("wp_userId", `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`);
+    const trimmedUsername = username.trim() || "Host";
+    localStorage.setItem("wp_username", trimmedUsername);
+    let hostUserId = user?.uid || sessionStorage.getItem("wp_userId") || localStorage.getItem("wp_userId");
+    if (!hostUserId) {
+      hostUserId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    }
+    sessionStorage.setItem("wp_userId", hostUserId);
+    localStorage.setItem("wp_userId", hostUserId);
     localStorage.setItem(`wp_host_${generatedRoomId}`, "true");
+    sessionStorage.setItem(`wp_host_${generatedRoomId}`, "true");
+
     if (roomMode === "youtube") {
       localStorage.setItem("wp_videoUrl", videoUrl);
       localStorage.setItem("wp_roomMode", "youtube");

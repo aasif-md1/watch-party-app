@@ -724,18 +724,18 @@ const VideoChat = ({ socket, roomId, username }) => {
           display: flex;
           align-items: center;
           gap: 6px;
-          background: rgba(18, 18, 24, 0.92);
+          background: rgba(18, 18, 24, 0.94);
           backdrop-filter: blur(14px);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          padding: 6px 10px;
-          border-radius: 24px;
+          padding: 6px 8px;
+          border-radius: 12px;
           z-index: 25;
           box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
         .vc-tool-btn {
           width: 34px;
           height: 34px;
-          border-radius: 50%;
+          border-radius: 8px;
           background: rgba(255, 255, 255, 0.06);
           border: 1px solid rgba(255, 255, 255, 0.08);
           color: #cbd5e1;
@@ -762,22 +762,22 @@ const VideoChat = ({ socket, roomId, username }) => {
 
         /* Solid Red Premium Call End Button */
         .vc-end-call-btn {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
+          width: 34px;
+          height: 34px;
+          border-radius: 8px;
           background: #dc2626;
           color: #ffffff;
-          border: none;
+          border: 1px solid rgba(239, 68, 68, 0.4);
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          box-shadow: 0 4px 14px rgba(220, 38, 38, 0.45);
-          transition: background 0.15s ease, box-shadow 0.15s ease;
+          box-shadow: 0 2px 10px rgba(220, 38, 38, 0.35);
+          transition: all 0.15s ease;
         }
         .vc-end-call-btn:hover {
-          background: #b91c1c;
-          box-shadow: 0 6px 18px rgba(185, 28, 28, 0.6);
+          background: #ef4444;
+          box-shadow: 0 4px 14px rgba(239, 68, 68, 0.5);
         }
 
         .vc-divider {

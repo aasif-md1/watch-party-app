@@ -53,9 +53,16 @@ const ScreenShareRoom = () => {
   const { user } = useAuth();
 
   const username = localStorage.getItem("wp_username") || user?.displayName || "Watcher";
-  const userId = user?.uid || localStorage.getItem("wp_userId") || `user_${Date.now()}`;
-  if (!localStorage.getItem("wp_userId")) {
-    try { localStorage.setItem("wp_userId", userId); } catch {}
+  const userId =
+    user?.uid ||
+    sessionStorage.getItem("wp_userId") ||
+    localStorage.getItem("wp_userId") ||
+    `user_${Date.now()}`;
+  if (!sessionStorage.getItem("wp_userId")) {
+    try {
+      sessionStorage.setItem("wp_userId", userId);
+      localStorage.setItem("wp_userId", userId);
+    } catch {}
   }
 
   const [isMobile, setIsMobile] = useState(false);
@@ -74,7 +81,10 @@ const ScreenShareRoom = () => {
   const [showParticipantsDropdown, setShowParticipantsDropdown] = useState(false);
   const [chatToast, setChatToast] = useState(null);
 
-  const isHost = hostId ? hostId === userId : (localStorage.getItem(`wp_host_${roomId}`) === "true");
+  const isHost = hostId
+    ? hostId === userId
+    : sessionStorage.getItem(`wp_host_${roomId}`) === "true" ||
+      localStorage.getItem(`wp_host_${roomId}`) === "true";
 
   const localStreamRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -103,7 +113,10 @@ const ScreenShareRoom = () => {
 
   useEffect(() => {
     const check = () => {
-      const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isMobileUserAgent =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
       const isTouch = navigator.maxTouchPoints > 0 || "ontouchstart" in window;
       const isSmallScreen = window.innerWidth < 1024;
       setIsMobile(isMobileUserAgent || (isTouch && isSmallScreen));
@@ -112,22 +125,66 @@ const ScreenShareRoom = () => {
     check();
     window.addEventListener("resize", check);
 
-    const lockOrientation = async () => {
-      try {
-        if (document.documentElement.requestFullscreen) {
-          await document.documentElement.requestFullscreen().catch(() => {});
-        }
-        if (screen.orientation && screen.orientation.lock) {
-          await screen.orientation.lock("landscape").catch(() => {});
-        }
-      } catch (e) {
-        console.warn("Fullscreen/Orientation lock failed", e);
+    // Dynamic Fullscreen & Orientation Lock: automatically re-engages when rotating to landscape
+    const reengageFullscreenLandscape = async () => {
+      const isLandscape =
+        window.screen?.orientation?.type?.includes("landscape") ||
+        window.innerWidth > window.innerHeight;
+
+      const isMobileDevice =
+        /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints > 0 &&
+          Math.min(window.innerWidth, window.innerHeight) < 768);
+
+      if (isMobileDevice && isLandscape) {
+        try {
+          if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen().catch(() => {});
+          }
+          if (window.screen?.orientation?.lock) {
+            await window.screen.orientation.lock("landscape").catch(() => {});
+          }
+        } catch (e) {}
       }
     };
-    if (window.innerWidth < 768) lockOrientation();
+
+    // Listen to orientation change from screen.orientation AND window
+    if (window.screen?.orientation) {
+      window.screen.orientation.addEventListener("change", reengageFullscreenLandscape);
+    }
+    window.addEventListener("orientationchange", reengageFullscreenLandscape);
+
+    // User gesture fallback for mobile browsers that require a tap after permission dialogs
+    const handleTouchReengage = () => {
+      const isLandscape = window.innerWidth > window.innerHeight;
+      const isMobileDevice =
+        /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints > 0 &&
+          Math.min(window.innerWidth, window.innerHeight) < 768);
+
+      if (isMobileDevice && isLandscape && !document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+        if (window.screen?.orientation?.lock) {
+          window.screen.orientation.lock("landscape").catch(() => {});
+        }
+      }
+    };
+
+    window.addEventListener("touchend", handleTouchReengage, { passive: true });
+    window.addEventListener("click", handleTouchReengage, { passive: true });
+
+    reengageFullscreenLandscape();
 
     return () => {
       window.removeEventListener("resize", check);
+      if (window.screen?.orientation) {
+        window.screen.orientation.removeEventListener("change", reengageFullscreenLandscape);
+      }
+      window.removeEventListener("orientationchange", reengageFullscreenLandscape);
+      window.removeEventListener("touchend", handleTouchReengage);
+      window.removeEventListener("click", handleTouchReengage);
       try {
         if (screen.orientation && screen.orientation.unlock) {
           screen.orientation.unlock();
@@ -170,7 +227,9 @@ const ScreenShareRoom = () => {
 
   // Join room & socket events
   useEffect(() => {
-    const isHostInitial = localStorage.getItem(`wp_host_${roomId}`) === "true";
+    const isHostInitial =
+      sessionStorage.getItem(`wp_host_${roomId}`) === "true" ||
+      localStorage.getItem(`wp_host_${roomId}`) === "true";
     const joinPayload = {
       roomId,
       roomType: "screenshare",
@@ -793,12 +852,17 @@ const ScreenShareRoom = () => {
         .screen-room-root {
           background: #0c0c0c;
           min-height: 100vh;
+          min-height: 100dvh;
           height: 100vh;
+          height: 100dvh;
           display: flex;
           flex-direction: column;
           color: #e2e8f0;
           font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
           overflow: hidden;
+          width: 100vw;
+          position: fixed;
+          inset: 0;
         }
 
         /* ===== HEADER ===== */

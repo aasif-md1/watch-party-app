@@ -80,6 +80,41 @@ io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
   // ========================
+  // ROOM CREATION
+  // ========================
+
+  socket.on("create_room", (data) => {
+    try {
+      if (!data || !data.roomId || !data.hostUserId) return;
+      const { roomId, hostUserId, hostUsername, roomType, videoUrl } = data;
+      console.log(`[CREATE_ROOM] Room ${roomId} created by host ${hostUsername} (${hostUserId})`);
+
+      // Cancel any pending cleanup timer for this room
+      if (roomCleanupTimers.has(roomId)) {
+        clearTimeout(roomCleanupTimers.get(roomId));
+        roomCleanupTimers.delete(roomId);
+      }
+
+      rooms.set(roomId, {
+        roomType: roomType || "youtube",
+        hostId: hostUserId,
+        hostUsername: hostUsername || "Host",
+        users: new Map(),
+        videoUrl: videoUrl || "",
+        playing: false,
+        seekTime: 0,
+        lastUpdated: Date.now(),
+        presenterId: null,
+        presenterUserId: null,
+        isScreenSharing: false,
+        messages: [],
+      });
+    } catch (err) {
+      console.error("create_room error:", err);
+    }
+  });
+
+  // ========================
   // ROOM JOIN / LEAVE
   // ========================
 
@@ -105,9 +140,11 @@ io.on("connection", (socket) => {
       }
 
       if (!rooms.has(roomId)) {
+        // If room does not exist yet: ONLY assign hostId if the joining user is the actual creator!
+        // If a friend joins before creator, hostId stays null until the genuine creator joins!
         rooms.set(roomId, {
           roomType,
-          hostId: userId,
+          hostId: isHost ? userId : null,
           users: new Map(),
           videoUrl: incomingUrl || "",
           playing: false,
@@ -120,9 +157,12 @@ io.on("connection", (socket) => {
         });
       } else {
         const currentRoom = rooms.get(roomId);
-        // If room had no host or this is explicitly the host joining
-        if (!currentRoom.hostId || (isHost && currentRoom.users.size === 0)) {
+        // If room has no host yet (e.g. friend joined first) and now the creator joins
+        if (!currentRoom.hostId && isHost) {
           currentRoom.hostId = userId;
+          console.log(`Assigned hostId ${userId} to room ${roomId}`);
+        } else if (isHost && currentRoom.hostId === userId) {
+          console.log(`Creator ${userId} rejoined their room ${roomId}`);
         }
         if (incomingUrl && currentRoom.videoUrl !== incomingUrl) {
           currentRoom.videoUrl = incomingUrl;
@@ -131,13 +171,14 @@ io.on("connection", (socket) => {
       }
 
       const currentRoom = rooms.get(roomId);
+      const isUserHost = currentRoom.hostId === userId;
 
       // Add or update user in room
       currentRoom.users.set(userId, {
         userId,
         username,
         socketId: socket.id,
-        isHost: currentRoom.hostId === userId,
+        isHost: isUserHost,
         joinedAt: Date.now(),
       });
       socketUserMap.set(socket.id, { roomId, userId });
