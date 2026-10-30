@@ -468,6 +468,9 @@ const RoomSetup = () => {
 
   const executeJoinRoom = useCallback(() => {
     localStorage.setItem("wp_username", username.trim());
+    if (user?.uid) localStorage.setItem("wp_userId", user.uid);
+    else if (!localStorage.getItem("wp_userId")) localStorage.setItem("wp_userId", `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`);
+    localStorage.removeItem(`wp_host_${joinRoomId}`);
     if (roomMode === "youtube") {
       localStorage.setItem("wp_videoUrl", videoUrl);
       localStorage.setItem("wp_roomMode", "youtube");
@@ -476,7 +479,7 @@ const RoomSetup = () => {
       localStorage.setItem("wp_roomMode", "screenshare");
       navigate(`/screen/${joinRoomId}`);
     }
-  }, [roomMode, videoUrl, joinRoomId, navigate, username]);
+  }, [roomMode, videoUrl, joinRoomId, navigate, username, user]);
 
   const handleCreate = () => {
     if (!validateCreateFields()) return;
@@ -500,6 +503,9 @@ const RoomSetup = () => {
 
   const enterGeneratedRoom = () => {
     localStorage.setItem("wp_username", username.trim());
+    if (user?.uid) localStorage.setItem("wp_userId", user.uid);
+    else if (!localStorage.getItem("wp_userId")) localStorage.setItem("wp_userId", `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`);
+    localStorage.setItem(`wp_host_${generatedRoomId}`, "true");
     if (roomMode === "youtube") {
       localStorage.setItem("wp_videoUrl", videoUrl);
       localStorage.setItem("wp_roomMode", "youtube");

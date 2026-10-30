@@ -8,10 +8,12 @@ const BACKEND_URL = isLocal
   : "https://watch-party-app-pulj.onrender.com";
 
 const socket = io(BACKEND_URL, {
+  transports: ["websocket", "polling"],
   reconnection: true,
-  reconnectionAttempts: 10,
+  reconnectionAttempts: Infinity,
   reconnectionDelay: 1000,
-  timeout: 10000
+  reconnectionDelayMax: 5000,
+  timeout: 20000,
 });
 
 console.log("=== APP ENVIRONMENT DEBUGS ===");
@@ -23,11 +25,7 @@ socket.on("connect", () => {
   console.log("✅ Successfully connected to backend:", BACKEND_URL, "| Socket ID:", socket.id);
 });
 socket.on("connect_error", (err) => {
-  console.error("❌ Socket connection error:");
-  console.error("Error Message:", err.message);
-  console.error("Error Description:", err.description);
-  console.error("Context:", err.context);
-  console.error("Target URL was:", BACKEND_URL);
+  console.error("❌ Socket connection error:", err.message);
 });
 socket.on("disconnect", (reason) => {
   console.warn("⚠️ Socket disconnected:", reason);

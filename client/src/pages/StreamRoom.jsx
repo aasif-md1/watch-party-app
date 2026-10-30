@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useSocket } from "../hooks/useSocket";
 import { useAuth } from "../hooks/useAuth";
@@ -6,19 +6,9 @@ import VideoPlayer from "../components/VideoPlayer";
 import ChatBox from "../components/ChatBox";
 import VideoChat from "../components/VideoChat";
 import { BrandLogo } from "../components/BrandLogo";
-import { MessageSquare, Video } from "lucide-react";
+import { MessageSquare, Video, Users, UserMinus, Crown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
-
-const WPLogo = ({ size = 22 }) => (
-  <img
-    src="/logo_symbol.png"
-    alt="WatchParty"
-    width={size}
-    height={size}
-    style={{ flexShrink: 0, objectFit: "contain", display: "block" }}
-  />
-);
 
 const StreamRoom = () => {
   const { roomId } = useParams();
@@ -28,6 +18,11 @@ const StreamRoom = () => {
   const playerRef = useRef(null);
 
   const username = localStorage.getItem("wp_username") || user?.displayName || "Watcher";
+  const userId = user?.uid || localStorage.getItem("wp_userId") || `user_${Date.now()}`;
+  if (!localStorage.getItem("wp_userId")) {
+    try { localStorage.setItem("wp_userId", userId); } catch {}
+  }
+
   const [videoUrl] = useState(localStorage.getItem("wp_videoUrl") || "");
   const [playing, setPlaying] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -35,14 +30,30 @@ const StreamRoom = () => {
   const [activeTab, setActiveTab] = useState("chat");
   const [showSidebar, setShowSidebar] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [memberCount, setMemberCount] = useState(0);
+  const [memberCount, setMemberCount] = useState(1);
+  const [roomUsers, setRoomUsers] = useState([]);
+  const [hostId, setHostId] = useState("");
+  const [showParticipantsDropdown, setShowParticipantsDropdown] = useState(false);
   const [chatToast, setChatToast] = useState(null);
 
-  const chatToastTimer = useRef(null);
+  const isHost = hostId ? hostId === userId : (localStorage.getItem(`wp_host_${roomId}`) === "true");
 
+  const chatToastTimer = useRef(null);
   const isHandlingSync = useRef(false);
   const lastSyncSent = useRef(0);
   const isBuffering = useRef(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowParticipantsDropdown(false);
+      }
+    };
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const check = () => {
@@ -53,29 +64,29 @@ const StreamRoom = () => {
     check();
     window.addEventListener("resize", check);
 
-    // Landscape lock on mobile (works on Android, silently fails on iOS)
     const lockOrientation = async () => {
       try {
         if (document.documentElement.requestFullscreen) {
-          await document.documentElement.requestFullscreen().catch(() => { });
+          await document.documentElement.requestFullscreen().catch(() => {});
         }
         if (screen.orientation && screen.orientation.lock) {
-          await screen.orientation.lock("landscape").catch(() => { });
+          await screen.orientation.lock("landscape").catch(() => {});
         }
-      } catch (e) { }
+      } catch (e) {}
     };
     if (window.innerWidth < 768) lockOrientation();
 
     return () => {
       window.removeEventListener("resize", check);
-      try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) { }
+      try {
+        if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+      } catch (e) {}
     };
   }, []);
 
   useEffect(() => {
     const handleMsg = (data) => {
-      if (activeTab !== "chat") setUnreadCount(c => c + 1);
-      // Show toast when sidebar is hidden
+      if (activeTab !== "chat") setUnreadCount((c) => c + 1);
       if (!showSidebar || activeTab !== "chat") {
         setChatToast({ author: data.author, message: data.message });
         if (chatToastTimer.current) clearTimeout(chatToastTimer.current);
@@ -91,12 +102,26 @@ const StreamRoom = () => {
   }, [activeTab]);
 
   useEffect(() => {
-    if (!videoUrl && !serverVideoUrl) { navigate("/"); return; }
+    if (!videoUrl && !serverVideoUrl) {
+      navigate("/");
+      return;
+    }
 
-    const joinRoom = () => socket.emit("join_room", { roomId, videoUrl });
+    const isHostInitial = localStorage.getItem(`wp_host_${roomId}`) === "true";
+    const joinPayload = {
+      roomId,
+      videoUrl,
+      roomType: "youtube",
+      username,
+      userId,
+      isHost: isHostInitial,
+    };
+
+    const joinRoom = () => socket.emit("join_room", joinPayload);
     joinRoom();
 
     const handleRoomState = (state) => {
+      if (state.hostId) setHostId(state.hostId);
       if (state.videoUrl && state.videoUrl !== serverVideoUrl) setServerVideoUrl(state.videoUrl);
       isHandlingSync.current = true;
       setPlaying(state.playing);
@@ -104,7 +129,9 @@ const StreamRoom = () => {
       if (playerRef.current && Math.abs(currentTime - state.seekTime) > 1.5) {
         playerRef.current.seekTo(state.seekTime);
       }
-      setTimeout(() => { isHandlingSync.current = false; }, 2000);
+      setTimeout(() => {
+        isHandlingSync.current = false;
+      }, 2000);
     };
 
     const handleVideoStateUpdate = (data) => {
@@ -112,20 +139,37 @@ const StreamRoom = () => {
       const currentTime = playerRef.current?.getCurrentTime() || 0;
       if (Math.abs(currentTime - data.seekTime) > 1.5) playerRef.current?.seekTo(data.seekTime);
       setPlaying(data.playing);
-      setTimeout(() => { isHandlingSync.current = false; }, 2000);
+      setTimeout(() => {
+        isHandlingSync.current = false;
+      }, 2000);
     };
 
     const handleVideoSeek = (data) => {
       isHandlingSync.current = true;
       playerRef.current?.seekTo(data.seekTime);
       setPlaying(data.playing);
-      setTimeout(() => { isHandlingSync.current = false; }, 2000);
+      setTimeout(() => {
+        isHandlingSync.current = false;
+      }, 2000);
+    };
+
+    const handleRoomUsers = ({ count, users, hostId: hId }) => {
+      if (typeof count === "number") setMemberCount(count);
+      if (Array.isArray(users)) setRoomUsers(users);
+      if (hId) setHostId(hId);
+    };
+
+    const handleKicked = (data) => {
+      alert(data?.reason || "You were removed from the room by the host.");
+      navigate("/");
     };
 
     socket.on("room_state", handleRoomState);
     socket.on("video_state_update", handleVideoStateUpdate);
     socket.on("video_seek", handleVideoSeek);
+    socket.on("room_users_update", handleRoomUsers);
     socket.on("member_count_update", (count) => setMemberCount(count));
+    socket.on("kicked_from_room", handleKicked);
     socket.on("connect", joinRoom);
 
     return () => {
@@ -133,63 +177,192 @@ const StreamRoom = () => {
       socket.off("room_state", handleRoomState);
       socket.off("video_state_update", handleVideoStateUpdate);
       socket.off("video_seek", handleVideoSeek);
+      socket.off("room_users_update", handleRoomUsers);
       socket.off("member_count_update");
+      socket.off("kicked_from_room", handleKicked);
     };
-  }, [socket, roomId, videoUrl, navigate]);
+  }, [socket, roomId, videoUrl, serverVideoUrl, username, userId, navigate]);
 
-  const handleProgress = (state) => {
+  const handleProgress = useCallback((state) => {
     if (!playing || isBuffering.current || isHandlingSync.current) return;
     const now = Date.now();
     if (now - lastSyncSent.current > 2000) {
       socket.emit("sync_time", { room: roomId, time: state.playedSeconds, playing: true });
       lastSyncSent.current = now;
     }
-  };
+  }, [playing, socket, roomId]);
 
-  const handleSyncAction = (isPlaying) => {
-    if (playing === isPlaying) return;
+  const handleSyncAction = useCallback((isPlaying) => {
     setPlaying(isPlaying);
     socket.emit("video_state_change", {
-      room: roomId, playing: isPlaying,
-      seekTime: playerRef.current?.getCurrentTime() || 0
+      room: roomId,
+      playing: isPlaying,
+      seekTime: playerRef.current?.getCurrentTime() || 0,
     });
-  };
+  }, [socket, roomId]);
 
-  const handleSeek = (seconds) => {
+  const handleSeek = useCallback((seconds) => {
     if (isHandlingSync.current) return;
     socket.emit("video_seek", { room: roomId, seekTime: seconds, playing });
+  }, [socket, roomId, playing]);
+
+  const handleBuffer = useCallback(() => {
+    isBuffering.current = true;
+  }, []);
+
+  const handleBufferEnd = useCallback(() => {
+    isBuffering.current = false;
+  }, []);
+
+  const handleKickUser = (targetUserId, targetUsername) => {
+    if (!isHost) return;
+    const confirmKick = window.confirm(`Are you sure you want to remove "${targetUsername}" from the room?`);
+    if (!confirmKick) return;
+
+    socket.emit("kick_user", {
+      roomId,
+      targetUserId,
+      requesterUserId: userId,
+    });
   };
-
-  const handleBuffer = () => { isBuffering.current = true; };
-  const handleBufferEnd = () => { isBuffering.current = false; };
-
-
 
   return (
     <div className="stream-room-root">
       <Helmet>
         <title>YouTube Watch Party Room — WatchParty</title>
-        <meta name="description" content="Join the YouTube Watch Party room and watch videos together in sync with friends. Live chat and instant video sync." />
+        <meta
+          name="description"
+          content="Join the YouTube Watch Party room and watch videos together in sync with friends. Live chat and instant video sync."
+        />
         <meta name="robots" content="noindex" />
       </Helmet>
+
       {/* Header */}
-      <motion.header
-        initial={{ y: -40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="stream-room-header"
-      >
+      <header className="stream-room-header">
         <div className="header-left">
-          <Link to="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginRight: "6px" }} title="WatchParty Home">
+          <Link
+            to="/"
+            style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginRight: "6px" }}
+            title="WatchParty Home"
+          >
             <BrandLogo size={26} showText={true} />
           </Link>
           <span className="room-badge">{roomId}</span>
-          <span className="room-badge" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            {memberCount}
-          </span>
-          <span className="room-badge" style={{ display: "flex", alignItems: "center", gap: "6px", color: "#FFFFFF", border: "1px solid rgba(255, 16, 40, 0.35)", background: "rgba(255, 16, 40, 0.08)" }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+
+          {/* Members Indicator: Clean info badge for users, Interactive Dropdown ONLY for Host */}
+          {!isHost ? (
+            <div className="room-badge room-members-indicator" title="Active participants in room">
+              <Users size={12} style={{ color: "#94a3b8" }} />
+              <span>{memberCount}</span>
+            </div>
+          ) : (
+            <div className="host-members-wrapper" ref={dropdownRef}>
+              <button
+                className={`room-badge host-members-btn ${showParticipantsDropdown ? "active" : ""}`}
+                onClick={() => setShowParticipantsDropdown(!showParticipantsDropdown)}
+                title="Room Management (Host only)"
+              >
+                <Users size={12} style={{ color: "#FF1028" }} />
+                <span>{memberCount}</span>
+                <span className="host-pill">
+                  <Crown size={10} strokeWidth={2.4} />
+                  HOST
+                </span>
+              </button>
+
+              {/* Host-only compact smooth dropdown */}
+              <AnimatePresence>
+                {showParticipantsDropdown && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 4, scale: 0.96 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    className="host-popover"
+                  >
+                    <div className="host-popover-header">
+                      <span className="popover-title">Room Users</span>
+                      <span className="popover-badge">{roomUsers.length || memberCount}</span>
+                    </div>
+
+                    <div className="host-popover-list">
+                      {/* Host first at top */}
+                      <div className="popover-user-row host-row">
+                        <div className="user-avatar host-avatar">
+                          {username.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="user-details">
+                          <span className="user-name">
+                            {username}
+                            <span className="you-label">(You)</span>
+                          </span>
+                          <span className="user-role-tag">
+                            <Crown size={9} strokeWidth={2.5} />
+                            Host
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Other room users */}
+                      {roomUsers
+                        .filter((u) => u.userId !== userId && u.userId !== hostId)
+                        .map((u) => (
+                          <div key={u.userId} className="popover-user-row">
+                            <div className="user-avatar">
+                              {u.username?.charAt(0).toUpperCase() || "U"}
+                            </div>
+                            <div className="user-details">
+                              <span className="user-name">{u.username}</span>
+                              <span className="user-status-online">
+                                <span className="status-dot-sm" />
+                                Online
+                              </span>
+                            </div>
+                            <button
+                              className="popover-kick-btn"
+                              onClick={() => handleKickUser(u.userId, u.username)}
+                              title={`Kick ${u.username}`}
+                            >
+                              <UserMinus size={11} strokeWidth={2.2} />
+                              <span>Kick</span>
+                            </button>
+                          </div>
+                        ))}
+
+                      {roomUsers.filter((u) => u.userId !== userId && u.userId !== hostId).length === 0 && (
+                        <div className="popover-empty">No other users in room</div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+
+          <span
+            className="room-badge"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              color: "#FFFFFF",
+              border: "1px solid rgba(255, 16, 40, 0.35)",
+              background: "rgba(255, 16, 40, 0.08)",
+            }}
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
             {username}
           </span>
           <div className="sync-indicator">
@@ -203,14 +376,25 @@ const StreamRoom = () => {
             onClick={() => setShowSidebar(!showSidebar)}
             title="Toggle Sidebar"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
               <line x1="15" y1="3" x2="15" y2="21"></line>
             </svg>
           </button>
-          <button className="btn-leave" onClick={() => navigate("/")}>Leave</button>
+          <button className="btn-leave" onClick={() => navigate("/")}>
+            Leave
+          </button>
         </div>
-      </motion.header>
+      </header>
 
       {/* Body */}
       <div className="stream-room-body">
@@ -251,7 +435,7 @@ const StreamRoom = () => {
 
           <div className="sidebar-content">
             <div style={{ display: activeTab === "chat" ? "flex" : "none", height: "100%", width: "100%", flexDirection: "column" }}>
-              <ChatBox socket={socket} room={roomId} username={username} />
+              <ChatBox socket={socket} room={roomId} username={username} userId={userId} />
             </div>
             <div style={{ display: activeTab === "video" ? "block" : "none", height: "100%", width: "100%" }}>
               <VideoChat socket={socket} roomId={roomId} username={username} />
@@ -267,29 +451,20 @@ const StreamRoom = () => {
             initial={{ opacity: 0, y: 20, x: 20 }}
             animate={{ opacity: 1, y: 0, x: 0 }}
             exit={{ opacity: 0, y: 10, x: 20 }}
-            transition={{ duration: 0.25 }}
-            onClick={() => { setShowSidebar(true); setActiveTab("chat"); setChatToast(null); }}
-            style={{
-              position: "fixed", bottom: "16px", right: "16px", zIndex: 200,
-              background: "rgba(15, 23, 42, 0.95)", backdropFilter: "blur(12px)",
-              border: "1px solid rgba(59, 130, 246, 0.2)",
-              borderRadius: "12px", padding: "10px 14px",
-              maxWidth: "280px", cursor: "pointer",
-              boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
-              display: "flex", alignItems: "center", gap: "10px"
+            transition={{ duration: 0.2 }}
+            onClick={() => {
+              setShowSidebar(true);
+              setActiveTab("chat");
+              setChatToast(null);
             }}
+            className="chat-toast"
           >
-            <div style={{
-              width: "28px", height: "28px", borderRadius: "50%",
-              background: "linear-gradient(135deg, #2563eb, #3b82f6)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "0.7rem", fontWeight: "700", color: "#fff", flexShrink: 0
-            }}>
+            <div className="toast-avatar">
               {chatToast.author?.charAt(0).toUpperCase()}
             </div>
             <div style={{ minWidth: 0 }}>
-              <p style={{ color: "#60a5fa", fontSize: "0.68rem", fontWeight: "600", margin: 0, lineHeight: 1 }}>{chatToast.author}</p>
-              <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.75rem", margin: "3px 0 0 0", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatToast.message}</p>
+              <p className="toast-author">{chatToast.author}</p>
+              <p className="toast-msg">{chatToast.message}</p>
             </div>
           </motion.div>
         )}
@@ -325,23 +500,193 @@ const StreamRoom = () => {
           align-items: center;
           gap: 12px;
         }
-        .brand {
-          font-size: 1rem;
+        .room-badge {
+          font-size: 0.72rem;
+          font-weight: 600;
+          color: #94a3b8;
+          background: rgba(255,255,255,0.05);
+          padding: 4px 10px;
+          border-radius: 6px;
+          border: 1px solid rgba(255,255,255,0.08);
+          transition: all 0.2s;
+        }
+        .room-members-indicator {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          cursor: default;
+        }
+        .host-members-wrapper {
+          position: relative;
+        }
+        .host-members-btn {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .host-members-btn:hover, .host-members-btn.active {
+          background: rgba(255, 16, 40, 0.12);
+          border-color: rgba(255, 16, 40, 0.4);
+          color: #fff;
+        }
+        .host-pill {
+          font-size: 0.6rem;
+          background: rgba(255, 16, 40, 0.18);
+          color: #FF5A78;
+          border: 1px solid rgba(255, 16, 40, 0.3);
+          padding: 1px 5px;
+          border-radius: 4px;
+          margin-left: 2px;
           font-weight: 700;
-          letter-spacing: -0.3px;
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          letter-spacing: 0.5px;
+        }
+
+        /* Host-Only Popover */
+        .host-popover {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 0;
+          width: 260px;
+          background: rgba(18, 18, 24, 0.98);
+          backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          box-shadow: 0 14px 40px rgba(0, 0, 0, 0.75);
+          z-index: 100;
+          overflow: hidden;
+        }
+        .host-popover-header {
+          padding: 10px 14px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: rgba(255, 255, 255, 0.02);
+        }
+        .popover-title {
+          font-size: 0.78rem;
+          font-weight: 700;
           color: #f1f5f9;
         }
-        .brand-accent { color: #FF1028; }
-        .room-badge {
-          font-size: 0.7rem;
-          font-weight: 600;
+        .popover-badge {
+          font-size: 0.65rem;
           color: #64748b;
-          background: rgba(255,255,255,0.05);
-          padding: 3px 10px;
-          border-radius: 6px;
-          letter-spacing: 0.5px;
-          border: 1px solid rgba(255,255,255,0.05);
+          background: rgba(255, 255, 255, 0.06);
+          padding: 1px 6px;
+          border-radius: 4px;
+          font-weight: 600;
         }
+        .host-popover-list {
+          padding: 6px;
+          max-height: 240px;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .popover-user-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 8px;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.03);
+          transition: background 0.15s;
+        }
+        .popover-user-row:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+        .host-row {
+          border-color: rgba(255, 16, 40, 0.2);
+          background: rgba(255, 16, 40, 0.04);
+        }
+        .user-avatar {
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.08);
+          color: #cbd5e1;
+          font-size: 0.72rem;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .host-avatar {
+          background: linear-gradient(135deg, #FF1028, #A30816);
+          color: #fff;
+        }
+        .user-details {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+        }
+        .user-name {
+          font-size: 0.78rem;
+          font-weight: 600;
+          color: #f1f5f9;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .you-label {
+          font-size: 0.65rem;
+          color: #64748b;
+          margin-left: 4px;
+          font-weight: 400;
+        }
+        .user-role-tag {
+          font-size: 0.62rem;
+          color: #FF5A78;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+        }
+        .user-status-online {
+          font-size: 0.62rem;
+          color: #22c55e;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .status-dot-sm {
+          width: 5px; height: 5px; border-radius: 50%;
+          background: #22c55e;
+        }
+        .popover-kick-btn {
+          background: rgba(239, 68, 68, 0.12);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          color: #f87171;
+          border-radius: 6px;
+          padding: 3px 7px;
+          font-size: 0.68rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          transition: all 0.15s;
+        }
+        .popover-kick-btn:hover {
+          background: rgba(239, 68, 68, 0.28);
+          border-color: rgba(239, 68, 68, 0.6);
+          color: #fff;
+        }
+        .popover-empty {
+          padding: 14px 8px;
+          text-align: center;
+          font-size: 0.72rem;
+          color: #64748b;
+        }
+
         .sync-indicator {
           display: flex;
           align-items: center;
@@ -398,16 +743,15 @@ const StreamRoom = () => {
           flex: 1;
           display: flex;
           overflow: hidden;
-          min-height: 0;
         }
         .main-content {
           flex: 1;
           display: flex;
-          flex-direction: column;
-          gap: 12px;
+          align-items: center;
+          justify-content: center;
           padding: 12px;
           min-width: 0;
-          overflow-y: auto;
+          background: #000;
         }
 
         .chat-panel {
@@ -461,6 +805,30 @@ const StreamRoom = () => {
           overflow: hidden;
         }
 
+        /* ===== CHAT TOAST ===== */
+        .chat-toast {
+          position: fixed; bottom: 16px; right: 16px; z-index: 200;
+          background: rgba(14, 14, 18, 0.95); backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 16, 40, 0.3);
+          border-radius: 12px; padding: 10px 14px;
+          max-width: 280px; cursor: pointer;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+          display: flex; alignItems: center; gap: 10px;
+        }
+        .toast-avatar {
+          width: 28px; height: 28px; border-radius: 50%;
+          background: linear-gradient(135deg, #FF1028, #D4081E);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 0.7rem; font-weight: 700; color: #fff; flex-shrink: 0;
+        }
+        .toast-author {
+          color: #FF5A78; font-size: 0.68rem; font-weight: 600; margin: 0; line-height: 1;
+        }
+        .toast-msg {
+          color: rgba(255,255,255,0.7); font-size: 0.75rem; margin: 3px 0 0 0; line-height: 1.3;
+          overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
         @media (max-width: 1024px) {
           .stream-room-body { flex-direction: column; }
           .chat-panel {
@@ -470,28 +838,14 @@ const StreamRoom = () => {
             height: 350px !important;
           }
         }
+
         @media (max-width: 600px) {
           .stream-room-header { padding: 0 12px; height: 46px; min-height: 46px; }
-          .brand { font-size: 0.85rem; }
-          .room-badge { display: none; }
-          .sync-text { display: none; }
+          .room-badge { padding: 3px 6px; font-size: 0.68rem; }
           .btn-leave { padding: 5px 10px; font-size: 0.7rem; }
           .btn-icon { width: 32px; height: 32px; }
-          .main-content { padding: 8px; gap: 8px; }
+          .main-content { padding: 6px; }
           .chat-panel { height: 300px !important; }
-        }
-
-
-        @media (max-height: 500px) and (orientation: landscape) {
-          .stream-room-header { height: 40px; min-height: 40px; }
-          .stream-room-body { flex-direction: row; }
-          .chat-panel {
-            border-left: 1px solid rgba(255,255,255,0.05);
-            border-top: none;
-            width: 320px !important;
-            height: auto !important;
-          }
-          .main-content { padding: 6px; gap: 6px; }
         }
       `}</style>
     </div>
