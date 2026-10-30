@@ -907,7 +907,7 @@ const RoomSetup = () => {
                           marginBottom: isMobile ? "14px" : "22px",
                         }}
                       >
-                        You can select a browser tab, window, or entire desktop
+                        You can select a browser tab, app, or entire screen with audio
                         once the room starts.
                       </div>
                     )}
