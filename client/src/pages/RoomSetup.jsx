@@ -470,21 +470,16 @@ const RoomSetup = () => {
     const trimmedUsername = username.trim() || "Host";
     localStorage.setItem("wp_username", trimmedUsername);
 
-    let hostUserId = user?.uid;
-    if (!hostUserId) {
-      hostUserId = sessionStorage.getItem("wp_userId") || localStorage.getItem("wp_userId");
-      if (!hostUserId) {
-        hostUserId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-      }
-    }
+    // Dedicated unique hostUserId tied to this created room
+    const hostUserId = `host_${user?.uid ? user.uid.substring(0, 6) + '_' : ''}${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 8)}`;
+
+    // Store strictly in this tab's sessionStorage — never leak to other tabs via localStorage!
+    sessionStorage.setItem(`wp_host_${newId}`, hostUserId);
     sessionStorage.setItem("wp_userId", hostUserId);
-    localStorage.setItem("wp_userId", hostUserId);
+    sessionStorage.setItem(`wp_tab_uid_${newId}`, hostUserId);
+    localStorage.removeItem(`wp_host_${newId}`);
 
-    // Host status is locked immediately so creator is recognized even if friends join early
-    localStorage.setItem(`wp_host_${newId}`, "true");
-    sessionStorage.setItem(`wp_host_${newId}`, "true");
-
-    // Register room on server right now
+    // Register room on server right now so that even if friend joins in the next millisecond, server already knows the genuine hostId
     if (socket) {
       socket.emit("create_room", {
         roomId: newId,
@@ -499,21 +494,27 @@ const RoomSetup = () => {
   const executeJoinRoom = useCallback(() => {
     const trimmedUsername = username.trim() || "Watcher";
     localStorage.setItem("wp_username", trimmedUsername);
-    let joinUserId = user?.uid;
-    if (!joinUserId) {
-      // Use sessionStorage so multiple tabs on the same computer have distinct IDs
-      joinUserId = sessionStorage.getItem("wp_userId");
-      if (!joinUserId) {
-        joinUserId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-        sessionStorage.setItem("wp_userId", joinUserId);
-      }
-    }
-    localStorage.setItem("wp_userId", joinUserId);
+
+    // Distinct unique participant ID for this tab so multiple tabs or devices never collide
+    const joinUserId = `guest_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
+    sessionStorage.setItem(`wp_tab_uid_${joinRoomId}`, joinUserId);
     sessionStorage.setItem("wp_userId", joinUserId);
 
     // Ensure joining participant is not marked as host
-    localStorage.removeItem(`wp_host_${joinRoomId}`);
     sessionStorage.removeItem(`wp_host_${joinRoomId}`);
+    localStorage.removeItem(`wp_host_${joinRoomId}`);
+
+    // Mobile auto-landscape fullscreen on join (user gesture tap)
+    if (window.innerWidth < 900 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      try {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock("landscape").catch(() => {});
+        }
+      } catch (e) {}
+    }
 
     if (roomMode === "youtube") {
       localStorage.setItem("wp_videoUrl", videoUrl);
@@ -523,7 +524,7 @@ const RoomSetup = () => {
       localStorage.setItem("wp_roomMode", "screenshare");
       navigate(`/screen/${joinRoomId}`);
     }
-  }, [roomMode, videoUrl, joinRoomId, navigate, username, user]);
+  }, [roomMode, videoUrl, joinRoomId, navigate, username]);
 
   const handleCreate = () => {
     if (!validateCreateFields()) return;
@@ -548,14 +549,26 @@ const RoomSetup = () => {
   const enterGeneratedRoom = () => {
     const trimmedUsername = username.trim() || "Host";
     localStorage.setItem("wp_username", trimmedUsername);
-    let hostUserId = user?.uid || sessionStorage.getItem("wp_userId") || localStorage.getItem("wp_userId");
-    if (!hostUserId) {
-      hostUserId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    }
+
+    const hostUserId =
+      sessionStorage.getItem(`wp_host_${generatedRoomId}`) ||
+      `host_${Date.now().toString(36)}`;
+    sessionStorage.setItem(`wp_host_${generatedRoomId}`, hostUserId);
+    sessionStorage.setItem(`wp_tab_uid_${generatedRoomId}`, hostUserId);
     sessionStorage.setItem("wp_userId", hostUserId);
-    localStorage.setItem("wp_userId", hostUserId);
-    localStorage.setItem(`wp_host_${generatedRoomId}`, "true");
-    sessionStorage.setItem(`wp_host_${generatedRoomId}`, "true");
+    localStorage.removeItem(`wp_host_${generatedRoomId}`);
+
+    // Mobile auto-landscape fullscreen on enter (user gesture tap)
+    if (window.innerWidth < 900 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      try {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock("landscape").catch(() => {});
+        }
+      } catch (e) {}
+    }
 
     if (roomMode === "youtube") {
       localStorage.setItem("wp_videoUrl", videoUrl);

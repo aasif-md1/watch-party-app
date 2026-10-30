@@ -53,17 +53,21 @@ const ScreenShareRoom = () => {
   const { user } = useAuth();
 
   const username = localStorage.getItem("wp_username") || user?.displayName || "Watcher";
-  const userId =
-    user?.uid ||
-    sessionStorage.getItem("wp_userId") ||
-    localStorage.getItem("wp_userId") ||
-    `user_${Date.now()}`;
-  if (!sessionStorage.getItem("wp_userId")) {
-    try {
-      sessionStorage.setItem("wp_userId", userId);
-      localStorage.setItem("wp_userId", userId);
-    } catch {}
-  }
+
+  // Dedicated unique participant ID per tab/session to avoid ghost counts and tab collision
+  const [userId] = useState(() => {
+    const creatorHostId = sessionStorage.getItem(`wp_host_${roomId}`);
+    if (creatorHostId && typeof creatorHostId === "string" && creatorHostId.length > 5) {
+      return creatorHostId;
+    }
+    let tabUid = sessionStorage.getItem(`wp_tab_uid_${roomId}`);
+    if (!tabUid) {
+      const prefix = user?.uid ? `${user.uid.substring(0, 6)}_` : "user_";
+      tabUid = `${prefix}${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
+      sessionStorage.setItem(`wp_tab_uid_${roomId}`, tabUid);
+    }
+    return tabUid;
+  });
 
   const [isMobile, setIsMobile] = useState(false);
   const [isIOSDevice, setIsIOSDevice] = useState(false);
@@ -81,10 +85,11 @@ const ScreenShareRoom = () => {
   const [showParticipantsDropdown, setShowParticipantsDropdown] = useState(false);
   const [chatToast, setChatToast] = useState(null);
 
-  const isHost = hostId
-    ? hostId === userId
-    : sessionStorage.getItem(`wp_host_${roomId}`) === "true" ||
-      localStorage.getItem(`wp_host_${roomId}`) === "true";
+  // Strict Host determination: only host if hostId matches userId or this tab holds the creator token
+  const isHost = Boolean(
+    (hostId && hostId === userId) ||
+    (sessionStorage.getItem(`wp_host_${roomId}`) && sessionStorage.getItem(`wp_host_${roomId}`) === userId)
+  );
 
   const localStreamRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -125,66 +130,43 @@ const ScreenShareRoom = () => {
     check();
     window.addEventListener("resize", check);
 
-    // Dynamic Fullscreen & Orientation Lock: automatically re-engages when rotating to landscape
-    const reengageFullscreenLandscape = async () => {
-      const isLandscape =
-        window.screen?.orientation?.type?.includes("landscape") ||
-        window.innerWidth > window.innerHeight;
-
+    // Auto-rotate to landscape & go fullscreen on phone (runs immediately on join/create)
+    const triggerLandscapeFullscreen = async () => {
       const isMobileDevice =
-        /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-        (navigator.maxTouchPoints > 0 &&
-          Math.min(window.innerWidth, window.innerHeight) < 768);
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints > 0 && Math.min(window.innerWidth, window.innerHeight) < 900);
 
-      if (isMobileDevice && isLandscape) {
-        try {
-          if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-            await document.documentElement.requestFullscreen().catch(() => {});
-          }
-          if (window.screen?.orientation?.lock) {
-            await window.screen.orientation.lock("landscape").catch(() => {});
-          }
-        } catch (e) {}
-      }
-    };
+      if (!isMobileDevice) return;
 
-    // Listen to orientation change from screen.orientation AND window
-    if (window.screen?.orientation) {
-      window.screen.orientation.addEventListener("change", reengageFullscreenLandscape);
-    }
-    window.addEventListener("orientationchange", reengageFullscreenLandscape);
-
-    // User gesture fallback for mobile browsers that require a tap after permission dialogs
-    const handleTouchReengage = () => {
-      const isLandscape = window.innerWidth > window.innerHeight;
-      const isMobileDevice =
-        /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-        (navigator.maxTouchPoints > 0 &&
-          Math.min(window.innerWidth, window.innerHeight) < 768);
-
-      if (isMobileDevice && isLandscape && !document.fullscreenElement) {
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen().catch(() => {});
+      try {
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen().catch(() => {});
         }
         if (window.screen?.orientation?.lock) {
-          window.screen.orientation.lock("landscape").catch(() => {});
+          await window.screen.orientation.lock("landscape").catch(() => {});
         }
-      }
+      } catch (e) {}
     };
 
-    window.addEventListener("touchend", handleTouchReengage, { passive: true });
-    window.addEventListener("click", handleTouchReengage, { passive: true });
+    // Auto-rotate immediately on enter — forces landscape even if user was in portrait!
+    triggerLandscapeFullscreen();
 
-    reengageFullscreenLandscape();
+    // Re-engage on touch or orientation change
+    window.addEventListener("touchend", triggerLandscapeFullscreen, { passive: true });
+    window.addEventListener("click", triggerLandscapeFullscreen, { passive: true });
+    window.addEventListener("orientationchange", triggerLandscapeFullscreen, { passive: true });
+    if (window.screen?.orientation) {
+      window.screen.orientation.addEventListener("change", triggerLandscapeFullscreen);
+    }
 
     return () => {
       window.removeEventListener("resize", check);
+      window.removeEventListener("touchend", triggerLandscapeFullscreen);
+      window.removeEventListener("click", triggerLandscapeFullscreen);
+      window.removeEventListener("orientationchange", triggerLandscapeFullscreen);
       if (window.screen?.orientation) {
-        window.screen.orientation.removeEventListener("change", reengageFullscreenLandscape);
+        window.screen.orientation.removeEventListener("change", triggerLandscapeFullscreen);
       }
-      window.removeEventListener("orientationchange", reengageFullscreenLandscape);
-      window.removeEventListener("touchend", handleTouchReengage);
-      window.removeEventListener("click", handleTouchReengage);
       try {
         if (screen.orientation && screen.orientation.unlock) {
           screen.orientation.unlock();
@@ -227,9 +209,10 @@ const ScreenShareRoom = () => {
 
   // Join room & socket events
   useEffect(() => {
-    const isHostInitial =
-      sessionStorage.getItem(`wp_host_${roomId}`) === "true" ||
-      localStorage.getItem(`wp_host_${roomId}`) === "true";
+    const isHostInitial = Boolean(
+      sessionStorage.getItem(`wp_host_${roomId}`) &&
+      sessionStorage.getItem(`wp_host_${roomId}`) === userId
+    );
     const joinPayload = {
       roomId,
       roomType: "screenshare",

@@ -140,8 +140,8 @@ io.on("connection", (socket) => {
       }
 
       if (!rooms.has(roomId)) {
-        // If room does not exist yet: ONLY assign hostId if the joining user is the actual creator!
-        // If a friend joins before creator, hostId stays null until the genuine creator joins!
+        // If room does not exist yet (e.g. joined via direct link): ONLY assign hostId if user has genuine isHost token!
+        // If a guest/friend joins before creator, hostId stays null until genuine creator joins!
         rooms.set(roomId, {
           roomType,
           hostId: isHost ? userId : null,
@@ -157,7 +157,7 @@ io.on("connection", (socket) => {
         });
       } else {
         const currentRoom = rooms.get(roomId);
-        // If room has no host yet (e.g. friend joined first) and now the creator joins
+        // If room has no host yet (e.g. friend joined first) and now the creator joins with isHost: true
         if (!currentRoom.hostId && isHost) {
           currentRoom.hostId = userId;
           console.log(`Assigned hostId ${userId} to room ${roomId}`);
@@ -171,7 +171,8 @@ io.on("connection", (socket) => {
       }
 
       const currentRoom = rooms.get(roomId);
-      const isUserHost = currentRoom.hostId === userId;
+      // Strictly enforce: user is ONLY host if their userId matches currentRoom.hostId!
+      const isUserHost = Boolean(currentRoom.hostId && currentRoom.hostId === userId);
 
       // Add or update user in room
       currentRoom.users.set(userId, {
