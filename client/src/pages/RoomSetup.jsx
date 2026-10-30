@@ -907,8 +907,9 @@ const RoomSetup = () => {
                           marginBottom: isMobile ? "14px" : "22px",
                         }}
                       >
-                        You can select a browser tab, app, or entire screen with audio
-                        once the room starts.
+                        {isMobile
+                          ? "Note: Phone me screen share support nahi karta hai. Phone se aap dusro ki shared screen dekh sakte hain."
+                          : "You can select a browser tab, window, or entire desktop once the room starts."}
                       </div>
                     )}
 

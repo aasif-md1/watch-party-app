@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 import ChatBox from "../components/ChatBox";
 import VideoChat from "../components/VideoChat";
 import { BrandLogo } from "../components/BrandLogo";
-import { MessageSquare, Video, ScreenShare, Users, UserMinus, Crown, Volume2, VolumeX } from "lucide-react";
+import { MessageSquare, Video, ScreenShare, Users, UserMinus, Crown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 
@@ -40,18 +40,7 @@ const optimizeSenderParams = async (pc) => {
         params.degradationPreference = "maintain-resolution";
         await sender.setParameters(params);
       } catch (e) {
-        console.warn("Could not set video sender params:", e);
-      }
-    } else if (sender.track?.kind === "audio") {
-      try {
-        const params = sender.getParameters();
-        if (!params.encodings || params.encodings.length === 0) {
-          params.encodings = [{}];
-        }
-        params.encodings[0].maxBitrate = 256_000; // 256 kbps crystal-clear stereo audio
-        await sender.setParameters(params);
-      } catch (e) {
-        console.warn("Could not set audio sender params:", e);
+        console.warn("Could not set sender params:", e);
       }
     }
   }
@@ -95,7 +84,6 @@ const ScreenShareRoom = () => {
   const [hostId, setHostId] = useState("");
   const [showParticipantsDropdown, setShowParticipantsDropdown] = useState(false);
   const [chatToast, setChatToast] = useState(null);
-  const [isAudioMutedByBrowser, setIsAudioMutedByBrowser] = useState(false);
 
   // Strict Host determination: only host if hostId matches userId or this tab holds the creator token
   const isHost = Boolean(
@@ -105,7 +93,6 @@ const ScreenShareRoom = () => {
 
   const localStreamRef = useRef(null);
   const remoteVideoRef = useRef(null);
-  const remoteMediaStreamRef = useRef(null);
   const isPresenterRef = useRef(false);
   const peerConnectionsRef = useRef(new Map());
   const presenterIceQueues = useRef(new Map());
@@ -405,14 +392,6 @@ const ScreenShareRoom = () => {
       setIsSharing(false);
       setIsPresenter(false);
       setRemoteStream(null);
-      if (remoteMediaStreamRef.current) {
-        remoteMediaStreamRef.current.getTracks().forEach((t) => t.stop());
-        remoteMediaStreamRef.current = null;
-      }
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = null;
-      }
-      setIsAudioMutedByBrowser(false);
       if (viewerPcRef.current) {
         viewerPcRef.current.close();
         viewerPcRef.current = null;
@@ -430,35 +409,10 @@ const ScreenShareRoom = () => {
       viewerPcRef.current = pc;
 
       pc.ontrack = (event) => {
-        let streamToUse = event.streams && event.streams[0];
-        if (!streamToUse) {
-          if (!remoteMediaStreamRef.current) {
-            remoteMediaStreamRef.current = new MediaStream();
-          }
-          if (event.track) {
-            remoteMediaStreamRef.current.addTrack(event.track);
-          }
-          streamToUse = remoteMediaStreamRef.current;
-        }
-
-        setRemoteStream(streamToUse);
-
-        if (remoteVideoRef.current && remoteVideoRef.current.srcObject !== streamToUse) {
-          remoteVideoRef.current.srcObject = streamToUse;
-        }
-
-        if (remoteVideoRef.current) {
-          const p = remoteVideoRef.current.play();
-          if (p !== undefined) {
-            p.catch((err) => {
-              console.warn("Autoplay with audio blocked by policy, muting temporarily:", err);
-              if (remoteVideoRef.current) {
-                remoteVideoRef.current.muted = true;
-                setIsAudioMutedByBrowser(true);
-                remoteVideoRef.current.play().catch(() => {});
-              }
-            });
-          }
+        if (event.streams && event.streams[0]) {
+          setRemoteStream(event.streams[0]);
+        } else if (event.track) {
+          setRemoteStream(new MediaStream([event.track]));
         }
       };
 
@@ -518,73 +472,37 @@ const ScreenShareRoom = () => {
   }, [socket, roomId]);
 
   const startSharing = async () => {
-    if (!navigator.mediaDevices?.getDisplayMedia) {
-      setShareError("Screen sharing is not supported by this browser. Please use Chrome on Android or desktop.");
+    const isMobileDevice =
+      isMobile ||
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      (navigator.maxTouchPoints > 0 && Math.min(window.innerWidth, window.innerHeight) < 900);
+
+    if (isMobileDevice) {
+      setShareError("Phone me screen share support nahi karta hai. Screen share karne ke liye please desktop ya laptop use karein.");
       setTimeout(() => setShareError(""), 5000);
       return;
     }
-
     try {
       setShareError("");
-
-      const isMobileDevice =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-        (navigator.maxTouchPoints > 0 && Math.min(window.innerWidth, window.innerHeight) < 900);
-
-      // Clean adaptive constraints: phones need flexible width/height and native audio
-      const primaryConstraints = isMobileDevice
-        ? {
-            video: {
-              frameRate: { ideal: 30, max: 30 },
-            },
-            audio: true, // Captures device / app audio natively on mobile
-          }
-        : {
-            video: {
-              cursor: "always",
-              width: { ideal: 1920, max: 1920 },
-              height: { ideal: 1080, max: 1080 },
-              frameRate: { ideal: 30, max: 30 },
-            },
-            audio: {
-              echoCancellation: false,
-              noiseSuppression: false,
-              autoGainControl: false,
-              sampleRate: 48000,
-              channelCount: 2,
-            },
-          };
-
-      let stream = null;
-      try {
-        stream = await navigator.mediaDevices.getDisplayMedia(primaryConstraints);
-      } catch (err1) {
-        if (err1.name === "NotAllowedError") throw err1;
-        console.warn("Primary screen share request failed, trying standard fallback:", err1);
-        try {
-          stream = await navigator.mediaDevices.getDisplayMedia({
-            video: true,
-            audio: true,
-          });
-        } catch (err2) {
-          if (err2.name === "NotAllowedError") throw err2;
-          console.warn("Audio screen share not supported by device, falling back to video only:", err2);
-          stream = await navigator.mediaDevices.getDisplayMedia({
-            video: true,
-          });
-        }
-      }
-
-      // Configure video and audio track content hints for cinema-smooth playback
-      stream.getVideoTracks().forEach((track) => {
-        if (track.contentHint !== undefined) {
-          track.contentHint = "motion"; // Avoids frame freeze / black frames
-        }
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          cursor: "always",
+          width: { ideal: 1920, max: 1920 },
+          height: { ideal: 1080, max: 1080 },
+          frameRate: { ideal: 30, max: 30 },
+        },
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          sampleRate: 48000,
+          channelCount: 2,
+        },
       });
 
-      stream.getAudioTracks().forEach((track) => {
+      stream.getVideoTracks().forEach((track) => {
         if (track.contentHint !== undefined) {
-          track.contentHint = "music"; // Full audio spectrum fidelity without vocal suppression
+          track.contentHint = "detail";
         }
       });
 
@@ -593,18 +511,10 @@ const ScreenShareRoom = () => {
       setIsPresenter(true);
       socket.emit("start_screen_share", { room: roomId, userId });
 
-      const videoTrack = stream.getVideoTracks()[0];
-      if (videoTrack) {
-        videoTrack.onended = () => stopSharing();
-      }
+      stream.getVideoTracks()[0].onended = () => stopSharing();
     } catch (err) {
-      if (err.name === "NotAllowedError") {
-        setShareError("Screen sharing was cancelled.");
-        setTimeout(() => setShareError(""), 3000);
-      } else {
-        setShareError("Failed to start screen sharing: " + err.message);
-        setTimeout(() => setShareError(""), 5000);
-      }
+      if (err.name === "NotAllowedError") setShareError("Screen sharing was cancelled.");
+      else setShareError("Failed to start screen sharing: " + err.message);
     }
   };
 
@@ -828,50 +738,17 @@ const ScreenShareRoom = () => {
               />
             )}
             {!isPresenter && remoteStream && (
-              <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <video
-                  ref={(el) => {
-                    remoteVideoRef.current = el;
-                    if (el && remoteStream && el.srcObject !== remoteStream) {
-                      el.srcObject = remoteStream;
-                    }
-                  }}
-                  autoPlay
-                  playsInline
-                  onLoadedMetadata={(e) => {
-                    const vid = e.target;
-                    const p = vid.play();
-                    if (p !== undefined) {
-                      p.catch((err) => {
-                        console.warn("Autoplay with audio blocked by browser policy, muting temporarily to avoid black screen:", err);
-                        vid.muted = true;
-                        setIsAudioMutedByBrowser(true);
-                        vid.play().catch(() => {});
-                      });
-                    }
-                  }}
-                  className="main-video"
-                />
-
-                {isAudioMutedByBrowser && (
-                  <motion.button
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    type="button"
-                    className="unmute-floating-btn"
-                    onClick={() => {
-                      if (remoteVideoRef.current) {
-                        remoteVideoRef.current.muted = false;
-                        setIsAudioMutedByBrowser(false);
-                      }
-                    }}
-                    title="Click to unmute stream audio"
-                  >
-                    <VolumeX size={15} style={{ color: "#ef4444" }} />
-                    <span>Tap to unmute audio</span>
-                  </motion.button>
-                )}
-              </div>
+              <video
+                ref={(el) => {
+                  remoteVideoRef.current = el;
+                  if (el && remoteStream && el.srcObject !== remoteStream) {
+                    el.srcObject = remoteStream;
+                  }
+                }}
+                autoPlay
+                playsInline
+                className="main-video"
+              />
             )}
             {!hasStream && (
               <div className="empty-state">
@@ -882,7 +759,9 @@ const ScreenShareRoom = () => {
                 </svg>
                 <p className="empty-title">No active screen share</p>
                 <p className="empty-sub">
-                  Click "Share Screen" to share any app, browser tab, or entire screen with audio.
+                  {isMobile
+                    ? "Phone me screen share support nahi karta hai. You can watch shared screens here."
+                    : 'Click "Share Screen" to start presenting'}
                 </p>
               </div>
             )}
@@ -894,7 +773,16 @@ const ScreenShareRoom = () => {
             )}
           </div>
 
-          {shareError && <div className="error-bar">{shareError}</div>}
+          {shareError && (
+            <div className="error-bar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>{shareError}</span>
+            </div>
+          )}
         </div>
 
         {/* Sidebar Panel */}
@@ -1336,40 +1224,20 @@ const ScreenShareRoom = () => {
           50% { opacity: 0.4; }
         }
 
-        .unmute-floating-btn {
-          position: absolute;
-          bottom: 16px;
-          left: 50%;
-          transform: translateX(-50%);
-          background: rgba(18, 18, 24, 0.94);
-          backdrop-filter: blur(14px);
-          border: 1px solid rgba(239, 68, 68, 0.45);
-          color: #f1f5f9;
-          font-size: 0.78rem;
-          font-weight: 600;
-          padding: 8px 18px;
-          border-radius: 20px;
+        .error-bar {
+          background: rgba(239, 68, 68, 0.16);
+          border: 1px solid rgba(239, 68, 68, 0.35);
+          color: #fca5a5;
+          padding: 10px 16px;
+          border-radius: 10px;
+          font-size: 0.82rem;
+          font-weight: 500;
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 8px;
-          cursor: pointer;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
-          z-index: 20;
-          transition: all 0.2s ease;
-        }
-        .unmute-floating-btn:hover {
-          background: rgba(239, 68, 68, 0.25);
-          border-color: #ef4444;
-          transform: translateX(-50%) scale(1.04);
-        }
-
-        .error-bar {
-          background: rgba(239,68,68,0.08);
-          border: 1px solid rgba(239,68,68,0.15);
-          color: #fca5a5;
-          padding: 10px 14px;
-          border-radius: 10px;
-          font-size: 0.8rem;
+          text-align: center;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
         }
 
         /* ===== CHAT/SIDEBAR PANEL ===== */
